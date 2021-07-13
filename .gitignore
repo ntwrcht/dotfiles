@@ -77,7 +77,7 @@
 /.dvdcss
 /.eaglerc
 /.emacs.d
-/.flow-yped/
+/.flow-typed/
 /.fontconfig
 /.ftcurlish.json
 /.gem
@@ -97,7 +97,7 @@
 /.keybase-installer
 /.lein
 /.lesshst
-/.local
+# /.local
 /.m2
 /.matplotlib
 /.mitmproxy
@@ -168,5 +168,4 @@ Powerline_*.cache
 /.pg*
 
 # SimpleContacts
-/bin/*-dbt
-.cfg
+/bin/*-db
