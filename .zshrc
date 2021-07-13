@@ -7,7 +7,7 @@ fi
 ##############################################################
 
 # If you come from bash you might have to change your $PATH.
-# export PATH=$HOME/bin:/usr/local/bin:$PATH
+export PATH=$HOME/bin:/usr/local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
@@ -102,7 +102,7 @@ export FZF_COMPLETION_OPTS='+c -x'
 ##############################################################
 # => Alias Bash Script
 ##############################################################
-alias config='/usr/bin/git --git-dir=/Users/canvas/.cfg/.git/ --work-tree=/Users/canvas'
+alias config='/usr/bin/git --git-dir=$HOME/.cfg/.git/ --work-tree=$HOME'
 alias vim="nvim"
 alias vi="nvim"
 alias grep="rg"

@@ -3,8 +3,8 @@
 #==============
 
 # So we use all of the packages we are about to install
-echo "export PATH='/usr/local/bin:$PATH'\n" >> ~/.zshrc
-source ~/.zshrc
+# echo "export PATH='/usr/local/bin:$PATH'\n" >> ~/.zshrc
+# source ~/.zshrc
 
 #==============
 # Remove old dot flies
