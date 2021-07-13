@@ -32,9 +32,9 @@ ln -sf ~/.cfg/.config ~/.config
 SYMLINKS+=('.config')
 ln -s ~/.cfg/.gitconfig ~/.gitconfig
 SYMLINKS+=('.gitconfig')
-ln -s ~/cfg/.tmux.conf ~/.tmux.conf
+ln -s ~/.cfg/.tmux.conf ~/.tmux.conf
 SYMLINKS+=('.tmux.conf')
-ln -s ~/cfg/.tmux.conf.local ~/.tmux.conf.local
+ln -s ~/.cfg/.tmux.conf.local ~/.tmux.conf.local
 SYMLINKS+=('.tmux.conf.local')
 
 echo ${SYMLINKS[@]}
