@@ -24,8 +24,6 @@ sudo rm -rf ~/.config > /dev/null 2>&1
 SYMLINKS=()
 ln -sf ~/.cfg/.vim ~/.vim
 SYMLINKS+=('.vim')
-ln -sf ~/.cfg/.vim/colors ~/.vim/colors
-SYMLINKS+=('.vim/colors')
 ln -sf ~/.cfg/.vimrc ~/.vimrc
 SYMLINKS+=('.vimrc')
 ln -sf ~/.cfg/.zshrc ~/.zshrc
