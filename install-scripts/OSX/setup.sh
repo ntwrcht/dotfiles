@@ -23,21 +23,21 @@ sudo rm -rf ~/.alacritty.yml > /dev/null 2>&1
 # Allow overriding with files of matching names in the custom-configs dir
 #==============
 SYMLINKS=()
-ln -sf ~/.cfg/.vim ~/.vim
+ln -sf ~/.dotfiles/.vim ~/.vim
 SYMLINKS+=('.vim')
-ln -sf ~/.cfg/.vimrc ~/.vimrc
+ln -sf ~/.dotfiles/.vimrc ~/.vimrc
 SYMLINKS+=('.vimrc')
-ln -sf ~/.cfg/.zshrc ~/.zshrc
+ln -sf ~/.dotfiles/.zshrc ~/.zshrc
 SYMLINKS+=('.zshrc')
-ln -sf ~/.cfg/.config/alacritty/.alacritty.yml ~/.alacritty.yml
+ln -sf ~/.dotfiles/.config/alacritty/.alacritty.yml ~/.alacritty.yml
 SYMLINKS+=('.alacritty.yml')
-ln -sf ~/.cfg/.config ~/.config
+ln -sf ~/.dotfiles/.config ~/.config
 SYMLINKS+=('.config')
-ln -s ~/.cfg/.gitconfig ~/.gitconfig
+ln -s ~/.dotfiles/.gitconfig ~/.gitconfig
 SYMLINKS+=('.gitconfig')
-ln -s ~/.cfg/.tmux.conf ~/.tmux.conf
+ln -s ~/.dotfiles/.tmux.conf ~/.tmux.conf
 SYMLINKS+=('.tmux.conf')
-ln -s ~/.cfg/.tmux.conf.local ~/.tmux.conf.local
+ln -s ~/.dotfiles/.tmux.conf.local ~/.tmux.conf.local
 SYMLINKS+=('.tmux.conf.local')
 
 echo ${SYMLINKS[@]}

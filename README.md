@@ -5,8 +5,8 @@
 ## Installation
 
 ```bash
-git clone git@github.com:Canvas-xxx/dotfiles.git ~/.cfg
-cd ~/.cfg/install-scripts
+git clone git@github.com:Canvas-xxx/dotfiles.git ~/.dotfiles
+cd ~/.dotfiles/install-scripts
 bash OSX/setup.sh
 ```
 
@@ -22,6 +22,7 @@ Follow is [link](https://github.com/junegunn/vim-plug) for pre-installation [vim
 - [fzf](https://github.com/junegunn/fzf)
 - [ipython](https://github.com/ipython/ipython)
 - [googler](https://github.com/jarun/googler)
+- [nerd-fonts](https://github.com/ryanoasis/nerd-fonts)
 
 ## Alacritty
 
