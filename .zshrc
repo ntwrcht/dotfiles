@@ -14,6 +14,7 @@ export ZSH="$HOME/.oh-my-zsh"
 UPDATE_ZSH_DAYS=13
 ZSH_CUSTOM=$ZSH/custom
 ZSH_THEME="powerlevel9k/powerlevel9k"
+POWERLEVEL9K_MODE="nerdfont-complete"
 CASE_SENSITIVE="true"
 HYPHEN_INSENSITIVE="true"
 DISABLE_AUTO_UPDATE="true"
@@ -45,7 +46,6 @@ export ARCHFLAGS="-arch x86_64"
 
 alias lc="colorls -lA --sd"
 export DEFAULT_USER="$USER"
-POWERLEVEL9K_MODE="nerdfont-complete"
 
 ##############################################################
 # => SSH
