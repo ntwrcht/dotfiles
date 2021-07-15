@@ -16,6 +16,7 @@ sudo rm -rf ~/.tmux.conf.local > /dev/null 2>&1
 sudo rm -rf ~/.zshrc > /dev/null 2>&1
 sudo rm -rf ~/.gitconfig > /dev/null 2>&1
 sudo rm -rf ~/.config > /dev/null 2>&1
+sudo rm -rf ~/.alacritty.yml > /dev/null 2>&1
 
 #==============
 # Create symlinks in the home folder
@@ -28,6 +29,8 @@ ln -sf ~/.cfg/.vimrc ~/.vimrc
 SYMLINKS+=('.vimrc')
 ln -sf ~/.cfg/.zshrc ~/.zshrc
 SYMLINKS+=('.zshrc')
+ln -sf ~/.cfg/.config/alacritty/.alacritty.yml ~/.alacritty.yml
+SYMLINKS+=('.alacritty.yml')
 ln -sf ~/.cfg/.config ~/.config
 SYMLINKS+=('.config')
 ln -s ~/.cfg/.gitconfig ~/.gitconfig
