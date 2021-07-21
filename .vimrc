@@ -51,6 +51,8 @@ set signcolumn=yes
 set tabstop=4
 set shiftwidth=4
 set expandtab
+set textwidth=161
+set colorcolumn=161
 
 " completion
 set cmdheight=1
