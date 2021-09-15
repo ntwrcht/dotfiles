@@ -53,6 +53,7 @@ set shiftwidth=4
 set expandtab
 set textwidth=161
 set colorcolumn=161
+set cursorline
 
 " completion
 set cmdheight=1
