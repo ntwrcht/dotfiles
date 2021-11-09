@@ -1,7 +1,7 @@
 # Dotfiles
 
 ![screenshot](./assets/screen_shot.png)
-![screenshot](./assets/Screen Shot 2564-11-09 at 20.36.48.png)
+![screenshot](./assets/screen-shot-homebrew.png)
 
 ## Installation
 
