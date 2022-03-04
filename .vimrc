@@ -107,12 +107,10 @@ let g:floaterm_height = 0.8
 let g:floaterm_complete_options = {'shortcut': 'floaterm', 'priority': 5, 'filter_length': [5, 20]}
 let g:floaterm_wintype = "float"
 
-nnoremap <silent> <leader>d :FloatermNew nnn -de<cr>
-nnoremap <silent> <leader>r :FloatermNew rg<cr>
+nnoremap <silent> <leader>d :FloatermNew nnn -deH<cr>
+nnoremap <silent> <leader>r :FloatermNew rg .<cr>
 nnoremap <silent> <leader>g :FloatermNew lazygit<cr>
 nnoremap <silent> <leader>f :FloatermNew fzf<cr>
-nnoremap <silent> <leader>p :FloatermNew ipython<cr>
-nnoremap <silent> <leader>q :FloatermNew googler<cr>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Prettier
