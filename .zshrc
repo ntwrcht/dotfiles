@@ -76,8 +76,8 @@ export PATH=$PATH:$ANDROID_HOME/platform-tools
 ##############################################################
 # => Python 
 ##############################################################
-export PATH="/usr/local/opt/python@3.9/bin:$PATH"
-export LDFLAGS="-L/usr/local/opt/python@3.9/lib"
+export PATH="/usr/local/opt/python@3.7/bin:$PATH"
+export LDFLAGS="-L/usr/local/opt/python@3.7/lib"
 ##############################################################
 # => Node 
 ##############################################################
