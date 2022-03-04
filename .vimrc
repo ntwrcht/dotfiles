@@ -92,7 +92,7 @@ let g:github_colors_soft = 1
 set background=dark
 set termguicolors
 
-colorscheme xcodedarkhc
+" colorscheme xcodedarkhc
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => FloatTerm
