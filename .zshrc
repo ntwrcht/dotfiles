@@ -67,7 +67,6 @@ export EDITOR='nvim'
 ##############################################################
 # => JAVA Home 
 ##############################################################
-export JAVA_HOME=`/usr/libexec/java_home -v 1.8`
 export ANDROID_HOME=$HOME/Library/Android/sdk
 export PATH=$PATH:$ANDROID_HOME/tools
 export PATH=$PATH:$ANDROID_HOME/tools/bin
@@ -94,7 +93,7 @@ export GO111MODULE=on
 export GOPRIVATE="gitlab.com/botnoi-sme,bitbucket.org/botnoi-sme,github.com/botnoi-sme"
 export PATH=$PATH:$GOPATH/bin
 export PATH=$PATH:$GOROOT/bin
-export GOROOT=/usr/local/Cellar/go/1.16.3/libexec
+export GOROOT=/usr/local/Cellar/go/1.17.2/libexec
 
 ##############################################################
 # => FZF Config 

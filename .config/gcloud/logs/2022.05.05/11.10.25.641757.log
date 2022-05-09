@@ -1,0 +1,26 @@
+2022-05-05 11:10:25,643 DEBUG    root            Loaded Command Group: ['gcloud', 'config']
+2022-05-05 11:10:25,646 DEBUG    root            Loaded Command Group: ['gcloud', 'config', 'config_helper']
+2022-05-05 11:10:25,648 DEBUG    root            Running [gcloud.config.config-helper] with arguments: [--format: "json"]
+2022-05-05 11:10:25,654 INFO     root            Display format: "default json"
+2022-05-05 11:10:25,655 INFO     ___FILE_ONLY___ {
+  "configuration": {
+    "active_configuration": "default",
+    "properties": {
+      "core": {
+        "account": "botnoi-devops@easy-sme.iam.gserviceaccount.com",
+        "disable_usage_reporting": "True",
+        "project": "easy-sme"
+      }
+    }
+  },
+  "credential": {
+    "access_token": "ya29.c.b0AXv0zTM0mkpH9JSkhJn1-gutF6qtyXayhNpHN68XCdif_nSAiFAxselaAwSgZvEXuPozirnLyyOGNZa_IzBytwIDaogwtx5txmG2W2KVRPdi26xFIVV01T4K0uiDWr6mkaDopbBI_9yF1OwKJ0gMt5fpffJ2ROOtxvVkaJFqTNwEVlLq4ng6WV30SPfXIlxOy35_66E4_qJLQnLQHAsQ8PxAJQMouQH8yxjfTjnZ...............................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................",
+    "id_token": "eyJhbGciOiJSUzI1NiIsImtpZCI6ImQ2M2RiZTczYWFkODhjODU0ZGUwZDhkNmMwMTRjMzZkYzI1YzQyOTIiLCJ0eXAiOiJKV1QifQ.eyJhdWQiOiIzMjU1NTk0MDU1OS5hcHBzLmdvb2dsZXVzZXJjb250ZW50LmNvbSIsImF6cCI6ImJvdG5vaS1kZXZvcHNAZWFzeS1zbWUuaWFtLmdzZXJ2aWNlYWNjb3VudC5jb20iLCJlbWFpbCI6ImJvdG5vaS1kZXZvcHNAZWFzeS1zbWUuaWFtLmdzZXJ2aWNlYWNjb3VudC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiZXhwIjoxNjQ2ODIyNDg1LCJpYXQiOjE2NDY4MTg4ODUsImlzcyI6Imh0dHBzOi8vYWNjb3VudHMuZ29vZ2xlLmNvbSIsInN1YiI6IjExMzA1OTM4MjY2MzU0NTc4NzEyNiJ9.Qc4KZZ2wqa8RY5n2godteBz6YIRsVb4S41fktI2EbBy8jgwSAmfICY01XjzvbxD_uApM5j9yBbHYRmmRYRV3xZNx-Q1ufIdGbhpm-vFhifEbdqBcmOJpJq0zDYSWKZepltTWmhLgmLOtgvWbFci8lDYe5-LxOYtPV5NbEd9_icbTA2qwPQiuKXagwkXpb0CJsFq093yVfeFPwJSeiRLkKLEztmtN0NSc1d66ZJTOi2TOLJTh0OYR8Q9xChNO1bxgiSMTC-R3CjbtdVrhcFaARIbg1jpUUOTjSMC3sdqf5I01ot21Ft34F8yNsTFh87pfXqjGIX08v7KbFPt4e9pzSQ",
+    "token_expiry": "2022-05-05T05:10:20Z"
+  },
+  "sentinels": {
+    "config_sentinel": "/Users/canvas/.config/gcloud/config_sentinel"
+  }
+}
+2022-05-05 11:10:25,655 INFO     ___FILE_ONLY___ 
+

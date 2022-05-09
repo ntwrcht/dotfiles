@@ -1,0 +1,31 @@
+2022-05-05 12:10:11,018 DEBUG    root            Loaded Command Group: ['gcloud', 'config']
+2022-05-05 12:10:11,022 DEBUG    root            Loaded Command Group: ['gcloud', 'config', 'config_helper']
+2022-05-05 12:10:11,024 DEBUG    root            Running [gcloud.config.config-helper] with arguments: [--format: "json"]
+2022-05-05 12:10:11,079 DEBUG    google.auth.transport.requests Making request: POST https://oauth2.googleapis.com/token
+2022-05-05 12:10:11,121 DEBUG    urllib3.connectionpool Starting new HTTPS connection (1): oauth2.googleapis.com:443
+2022-05-05 12:10:11,257 DEBUG    urllib3.connectionpool https://oauth2.googleapis.com:443 "POST /token HTTP/1.1" 200 None
+2022-05-05 12:10:11,287 DEBUG    google.auth.transport.requests Making request: POST https://oauth2.googleapis.com/token
+2022-05-05 12:10:11,349 DEBUG    urllib3.connectionpool https://oauth2.googleapis.com:443 "POST /token HTTP/1.1" 200 None
+2022-05-05 12:10:11,353 INFO     root            Display format: "default json"
+2022-05-05 12:10:11,354 INFO     ___FILE_ONLY___ {
+  "configuration": {
+    "active_configuration": "default",
+    "properties": {
+      "core": {
+        "account": "botnoi-devops@easy-sme.iam.gserviceaccount.com",
+        "disable_usage_reporting": "True",
+        "project": "easy-sme"
+      }
+    }
+  },
+  "credential": {
+    "access_token": "ya29.c.b0AXv0zTPxMGHy7e0jgJ2rrhGzqN9zy-NZ9_Or9O2k29t8yWyawP9ks2_IzetRjsWhL9pBUlX1sBkg4nrWKzVdqwa03QDrADCmNLJdLuoioE3zUNAUQfFAyKMF97q0wxvty3aJVAmwJHaJA-UyCxAdblK7pkEJC3wmhkTYqBNQRRYdh1J1mkNuvEqaAewgxgwfRuBP9FA575oFxbPPV_QJ5csCbjj0P8Py_0wqUHgp...............................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................",
+    "id_token": "eyJhbGciOiJSUzI1NiIsImtpZCI6ImZjYmQ3ZjQ4MWE4MjVkMTEzZTBkMDNkZDk0ZTYwYjY5ZmYxNjY1YTIiLCJ0eXAiOiJKV1QifQ.eyJhdWQiOiIzMjU1NTk0MDU1OS5hcHBzLmdvb2dsZXVzZXJjb250ZW50LmNvbSIsImF6cCI6ImJvdG5vaS1kZXZvcHNAZWFzeS1zbWUuaWFtLmdzZXJ2aWNlYWNjb3VudC5jb20iLCJlbWFpbCI6ImJvdG5vaS1kZXZvcHNAZWFzeS1zbWUuaWFtLmdzZXJ2aWNlYWNjb3VudC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiZXhwIjoxNjUxNzMxMDExLCJpYXQiOjE2NTE3Mjc0MTEsImlzcyI6Imh0dHBzOi8vYWNjb3VudHMuZ29vZ2xlLmNvbSIsInN1YiI6IjExMzA1OTM4MjY2MzU0NTc4NzEyNiJ9.lV6rOGt86YSKZZJcjTIoT0nqPn2mXSfI_DGK6NnmWQfD3XjZuR0lzbWqUe1G1egq6Da_XGv_z07qT5JBHVmATDNI04wNKdxvoOMnzvzhTAanXPPre-vKaytWA2xotzDdCZtZv7g8SgwjJkiC4j18VIVQkTyarUwMLYJIcDVWebtvp1GOyFjjzpl9YcnVNAUf9S0-_s4oEt7CnR58dA6Rq3DK-6p_EyLjbTUkTyzs_3Z-dAOPLoJ4wnIyPTXIEEvS6bfNydYJeAlwGrhbR7o8m3Fy0jZiknWuVjrdUJ0JX75p-xNzyBfbSrJjjdBLhmwvy0KgJwoOLu-VuIynsCv_cg",
+    "token_expiry": "2022-05-05T06:10:10Z"
+  },
+  "sentinels": {
+    "config_sentinel": "/Users/canvas/.config/gcloud/config_sentinel"
+  }
+}
+2022-05-05 12:10:11,354 INFO     ___FILE_ONLY___ 
+
