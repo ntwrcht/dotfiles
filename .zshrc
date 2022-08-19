@@ -93,7 +93,7 @@ export GO111MODULE=on
 export GOPRIVATE="gitlab.com/botnoi-sme,bitbucket.org/botnoi-sme,github.com/botnoi-sme"
 export PATH=$PATH:$GOPATH/bin
 export PATH=$PATH:$GOROOT/bin
-export GOROOT=/usr/local/Cellar/go/1.17.2/libexec
+# export GOROOT=/usr/local/bin/go
 
 ##############################################################
 # => FZF Config 
