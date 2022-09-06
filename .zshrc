@@ -75,8 +75,8 @@ export PATH=$PATH:$ANDROID_HOME/platform-tools
 ##############################################################
 # => Python 
 ##############################################################
-export PATH="/usr/local/opt/python@3.7/bin:$PATH"
-export LDFLAGS="-L/usr/local/opt/python@3.7/lib"
+# export PATH="/usr/local/opt/python@3.7/bin:$PATH"
+# export LDFLAGS="-L/usr/local/opt/python@3.7/lib"
 ##############################################################
 # => Node 
 ##############################################################
@@ -111,8 +111,8 @@ alias config='/usr/bin/git --git-dir=$HOME/.cfg/.git/ --work-tree=$HOME'
 alias vim="nvim"
 alias vi="nvim"
 alias grep="rg"
-alias python="python3"
-alias pip="pip3"
+alias python="python3.7"
+alias pip="pip3.7"
 alias nnn="nnn -dea"
 alias lg="lazygit"
 alias gf='git fetch --all --prune'
