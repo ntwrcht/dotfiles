@@ -118,3 +118,6 @@ alias lg="lazygit"
 alias gf='git fetch --all --prune'
 alias gb='git branch -a'
 alias gm='git branch --merged'
+
+# Load Angular CLI autocompletion.
+source <(ng completion script)
