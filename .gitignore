@@ -4,8 +4,9 @@
 # .config/spotify-tui/client.yml
 # .config/yarn
 .config/*
-.config/!alacritty
-.config/!kitty
+!.config/alacritty/*
+!.config/kitty/*
+!.config/nvim/*
 
 # non-dot files
 # /[^.]*
