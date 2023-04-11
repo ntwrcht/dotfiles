@@ -31,8 +31,8 @@ ln -sf ~/.dotfiles/.zshrc ~/.zshrc
 SYMLINKS+=('.zshrc')
 ln -sf ~/.dotfiles/.config/alacritty/.alacritty.yml ~/.alacritty.yml
 SYMLINKS+=('.alacritty.yml')
-ln -sf ~/.dotfiles/.config ~/.config
-SYMLINKS+=('.config')
+ln -sf ~/.dotfiles/.config/kitty/kitty.conf ~/kitty.conf
+SYMLINKS+=('kitty.conf')
 ln -s ~/.dotfiles/.gitconfig ~/.gitconfig
 SYMLINKS+=('.gitconfig')
 ln -s ~/.dotfiles/.tmux.conf ~/.tmux.conf
