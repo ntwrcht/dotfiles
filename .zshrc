@@ -75,8 +75,11 @@ export PATH=$PATH:$ANDROID_HOME/platform-tools
 ##############################################################
 # => Python 
 ##############################################################
-# export PATH="/usr/local/opt/python@3.7/bin:$PATH"
-# export LDFLAGS="-L/usr/local/opt/python@3.7/lib"
+export PYENV_ROOT="$HOME/.pyenv" 
+export PATH="$PYENV_ROOT/bin:$PATH" 
+eval "$(pyenv init --path)" 
+eval "$(pyenv init -)"
+export PATH="/opt/homebrew/opt/python@3.8/libexec/bin:$PATH"
 ##############################################################
 # => Node 
 ##############################################################
@@ -111,13 +114,12 @@ alias config='/usr/bin/git --git-dir=$HOME/.cfg/.git/ --work-tree=$HOME'
 alias vim="nvim"
 alias vi="nvim"
 alias grep="rg"
-alias python="python3.7"
-alias pip="pip3.7"
 alias nnn="nnn -dea"
 alias lg="lazygit"
 alias gf='git fetch --all --prune'
 alias gb='git branch -a'
 alias gm='git branch --merged'
+alias gp="git pull"
 
 # Load Angular CLI autocompletion.
 source <(ng completion script)
