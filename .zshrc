@@ -75,10 +75,6 @@ export PATH=$PATH:$ANDROID_HOME/platform-tools
 ##############################################################
 # => Python 
 ##############################################################
-export PYENV_ROOT="$HOME/.pyenv" 
-export PATH="$PYENV_ROOT/bin:$PATH" 
-eval "$(pyenv init --path)" 
-eval "$(pyenv init -)"
 export PATH="/opt/homebrew/opt/python@3.8/libexec/bin:$PATH"
 ##############################################################
 # => Node 
