@@ -75,7 +75,7 @@ export PATH=$PATH:$ANDROID_HOME/platform-tools
 ##############################################################
 # => Python 
 ##############################################################
-export PATH="/opt/homebrew/opt/python@3.8/libexec/bin:$PATH"
+export PATH="/opt/homebrew/opt/python@3.11/libexec/bin:$PATH"
 ##############################################################
 # => Node 
 ##############################################################
@@ -116,6 +116,12 @@ alias gf='git fetch --all --prune'
 alias gb='git branch -a'
 alias gm='git branch --merged'
 alias gp="git pull"
+alias gl="git log --pretty=oneline"
+
+git_rebase_dynamic() {
+    git rebase -i HEAD~$1
+}
+alias grb="git_rebase_dynamic"
 
 # Load Angular CLI autocompletion.
 source <(ng completion script)

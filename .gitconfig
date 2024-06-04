@@ -13,3 +13,5 @@
 	template = /Users/worachotesuwanyothin/.stCommitMsg
 [push]
 	autoSetupRemote = true
+[url "git@gitlab.com:"]
+	insteadOf = https://gitlab.com/
