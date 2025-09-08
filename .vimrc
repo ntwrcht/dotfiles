@@ -26,6 +26,7 @@ Plug 'peitalin/vim-jsx-typescript'
 Plug 'prettier/vim-prettier', { 'do': 'yarn install --frozen-lockfile --production' }
 Plug 'darrikonn/vim-gofmt', { 'do': ':GoUpdateBinaries' }
 Plug 'leafOfTree/vim-vue-plugin'
+Plug 'madox2/vim-ai'
 call plug#end()
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -176,6 +177,59 @@ nnoremap <silent> <C-j> :TmuxNavigateDown<cr>
 nnoremap <silent> <C-k> :TmuxNavigateUp<cr>
 nnoremap <silent> <C-l> :TmuxNavigateRight<cr>
 nnoremap <silent> <C-\> :TmuxNavigatePrevious<cr>
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Python
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+let g:python3_host_prog = '/opt/homebrew/bin/python3'
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => VIM AI
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+let g:vim_ai_roles_config_file = '~/roles.ini'
+
+let g:vim_ai_edit = {
+\  "options": {
+\    "model": "gpt-4.1-mini",
+\    "stream": 0,
+\    "temperature": 1,
+\    "max_completion_tokens": 25000,
+\    "initial_prompt": "",
+\  },
+\}
+
+let g:vim_ai_chat = {
+\  "options": {
+\    "model": "gpt-4.1-mini",
+\    "stream": 0,
+\    "temperature": 1,
+\    "max_completion_tokens": 25000,
+\    "initial_prompt": "",
+\  },
+\}
+
+xnoremap <leader>c :AIChat<CR>
+nnoremap <leader>c :AIChat<CR>
+
+nnoremap <leader>re :AIRedo<CR>
+nnoremap <leader>cm :GitCommitMessage<CR>
+
+" custom command suggesting git commit message, takes no arguments
+function! GitCommitMessageFn()
+  let l:range = 0
+  let l:diff = system('git diff HEAD')
+  let l:prompt = "Hey, I just made some code changes. Here’s the diff. Can you suggest a short, clear commit message for it?\n" . l:diff
+  let l:config = {
+  \  "engine": "chat",
+  \  "options": {
+  \    "model": "gpt-4.1-mini",
+  \    "initial_prompt": ">>> system\nYou are experienced in software development. Generate a concise git commit message from the diff provided below. Write it in a clean and concise way so that the team can clearly understand the commit more easily. The output should be a short explanation only.",
+  \    "temperature": 1,
+  \  }
+  \}
+  call vim_ai#AIRun(l:range, l:config, l:prompt)
+endfunction
+command! GitCommitMessage call GitCommitMessageFn()
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => COC VIM

@@ -75,7 +75,8 @@ export PATH=$PATH:$ANDROID_HOME/platform-tools
 ##############################################################
 # => Python 
 ##############################################################
-export PATH="/opt/homebrew/opt/python@3.11/libexec/bin:$PATH"
+export PATH="/opt/homebrew/opt/python@3.9/libexec/bin:$PATH"
+
 ##############################################################
 # => Node 
 ##############################################################
@@ -92,7 +93,6 @@ export GO111MODULE=on
 export GOPRIVATE="gitlab.com/botnoi-sme,bitbucket.org/botnoi-sme,github.com/botnoi-sme"
 export PATH=$PATH:$GOPATH/bin
 export PATH=$PATH:$GOROOT/bin
-# export GOROOT=/usr/local/bin/go
 
 ##############################################################
 # => FZF Config 
@@ -114,7 +114,8 @@ alias nnn="nnn -dea"
 alias lg="lazygit"
 alias gf='git fetch --all --prune'
 alias gb='git branch -a'
-alias gm='git branch --merged'
+alias gbm='git branch --merged'
+alias gbnm='git branch --no-merged'
 alias gp="git pull"
 alias gl="git log --pretty=oneline"
 
@@ -125,3 +126,12 @@ alias grb="git_rebase_dynamic"
 
 # Load Angular CLI autocompletion.
 source <(ng completion script)
+
+##############################################################
+# => VIM AI 
+##############################################################
+# save api key to `~/.config/openai.token` file
+echo "$TOKEN" > ~/.config/openai.token
+
+# alternatively set it as an environment variable
+export OPENAI_API_KEY="$TOKEN"
