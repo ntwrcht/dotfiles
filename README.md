@@ -32,6 +32,20 @@ git clone git@github.com:Canvas-xxx/dotfiles.git ~/.dotfiles && cd ~/.dotfiles &
 
 ---
 
+## 📦 Dependencies
+
+Core tools managed via [`Brewfile`](./Brewfile):
+
+| Category | Tools |
+| :--- | :--- |
+| **Editor** | [`Neovim`](https://github.com/neovim/neovim), `Vim` |
+| **Shell** | [`Zsh`](https://www.zsh.org/), [`Zoxide`](https://github.com/ajeetdsouza/zoxide), [`Fzf`](https://github.com/junegunn/fzf), [`Bat`](https://github.com/sharkdp/bat), [`Eza`](https://github.com/eza-community/eza) |
+| **Terminal** | [`Kitty`](https://sw.kovidgoyal.net/kitty/), [`Tmux`](https://github.com/tmux/tmux) |
+| **Workflow** | [`Lazygit`](https://github.com/jesseduffield/lazygit), [`Fd`](https://github.com/sharkdp/fd), [`Ripgrep`](https://github.com/BurntSushi/ripgrep), [`Jq`](https://github.com/jqlang/jq), [`Delta`](https://github.com/dandavison/delta) |
+| **Runtime** | [`Fnm`](https://github.com/Schniz/fnm), [`Uv`](https://github.com/astral-sh/uv), [`Yarn`](https://github.com/yarnpkg/yarn) |
+
+---
+
 ## 🔒 Secrets
 
 Managed via `~/.zshrc-secrets` (ignored by Git). See [`.zshrc-secrets.example`](./.zshrc-secrets.example) for configuration.
