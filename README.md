@@ -1,133 +1,112 @@
-# Dotfiles
+# ✦ Dotfiles
 
-![screenshot](./assets/screen_shot.png)
-![screenshot](./assets/screen-shot-homebrew.png)
+<div align="center">
 
-Personal macOS dotfiles for shell, Git, Neovim, tmux, and Kitty.
+![macOS](https://img.shields.io/badge/os-macOS-black?style=flat-square&logo=apple)
+![Zsh](https://img.shields.io/badge/shell-zsh-blue?style=flat-square&logo=zsh)
+![Neovim](https://img.shields.io/badge/editor-neovim-green?style=flat-square&logo=neovim)
+![Tmux](https://img.shields.io/badge/multiplexer-tmux-blueviolet?style=flat-square&logo=tmux)
+![License](https://img.shields.io/badge/license-MIT-yellow?style=flat-square)
 
-## Installation
+**A modern, minimalist development environment for macOS.**
+*Tailored for efficiency, performance, and aesthetic consistency.*
 
-```bash
-git clone git@github.com:Canvas-xxx/dotfiles.git ~/.dotfiles
-cd ~/.dotfiles
-./install
-make doctor
-```
+[Installation](#-installation) • [Commands](#-commands) • [Dependencies](#-dependencies) • [Runtime](#-runtime-management) • [Secrets](#-secrets)
 
-The installer creates symlinks into your home directory. Existing files are moved to:
+</div>
 
-```bash
-~/.dotfiles-backup/<timestamp>
-```
+---
 
-Preview changes without modifying files:
+## 📸 Preview
 
-```bash
-./install --dry-run
-```
+<div align="center">
+  <img src="./assets/screen_shot.png" width="48%" />
+  <img src="./assets/screen-shot-homebrew.png" width="48%" />
+</div>
 
-## Commands
+---
 
-```bash
-make dry-run   # preview symlink changes
-make install   # install dotfile symlinks
-make doctor    # check required and optional tools
-make deps      # install Homebrew dependencies from Brewfile
-make cleanup   # preview Homebrew runtime cleanup candidates
-```
+## 🚀 Installation
 
-The installer also creates `~/.zshrc-secrets` when it is missing and creates a dedicated Neovim Python provider virtualenv at `~/.local/share/nvim/python-provider`.
-
-## Dependencies
-
-Install Homebrew packages:
+Quickly bootstrap your environment with a single command:
 
 ```bash
-brew bundle
+git clone git@github.com:Canvas-xxx/dotfiles.git ~/.dotfiles && cd ~/.dotfiles && ./install
 ```
 
-Useful tools included in the `Brewfile`:
+> [!IMPORTANT]
+> After installation, run `make doctor` to verify your environment and `make deps` to install required tools.
 
-- [bat](https://github.com/sharkdp/bat)
-- [ddgr](https://github.com/jarun/ddgr)
-- [eza](https://github.com/eza-community/eza)
-- [fd](https://github.com/sharkdp/fd)
-- [fnm](https://github.com/Schniz/fnm)
-- [nnn](https://github.com/jarun/nnn)
-- [ripgrep](https://github.com/BurntSushi/ripgrep)
-- [lazygit](https://github.com/jesseduffield/lazygit)
-- [fzf](https://github.com/junegunn/fzf)
-- [git-delta](https://github.com/dandavison/delta)
-- [jq](https://github.com/jqlang/jq)
-- [neovim](https://github.com/neovim/neovim)
-- [nerd-fonts](https://github.com/ryanoasis/nerd-fonts)
-- [tealdeer](https://github.com/tealdeer-rs/tealdeer)
-- [uv](https://github.com/astral-sh/uv)
-- [yarn](https://github.com/yarnpkg/yarn)
-- [zoxide](https://github.com/ajeetdsouza/zoxide)
+The installer creates symlinks in your home directory. Existing files are safely moved to `~/.dotfiles-backup/<timestamp>`.
 
-## Runtime Management
+---
 
-Use Homebrew for system packages and runtime managers, not for locking every project runtime.
+## 🛠 Commands
 
-For Node.js, prefer `fnm` and install an LTS release per machine or per project:
+Manage your environment using the included `Makefile`:
 
+| Command | Description |
+| :--- | :--- |
+| `make install` | Install or update all symlinks |
+| `make dry-run` | Preview symlink changes without applying |
+| `make doctor` | Run diagnostic check on tools and paths |
+| `make deps` | Install Homebrew dependencies from `Brewfile` |
+| `make cleanup` | Identify and remove orphaned runtime formulae |
+
+---
+
+## 📦 Dependencies
+
+Managed via **Homebrew**. Core tools included in the bundle:
+
+| Category | Tools |
+| :--- | :--- |
+| **Editor** | `Neovim` (Primary), `Vim` (Fallback) |
+| **Shell** | `Zsh`, `Zoxide`, `Fzf`, `Bat`, `Eza` |
+| **Terminal** | `Kitty`, `Tmux` |
+| **Workflow** | `Lazygit`, `Fd`, `Ripgrep`, `Jq`, `Delta` |
+| **Runtime** | `Fnm` (Node), `Uv` (Python), `Yarn` |
+
+---
+
+## ⚙️ Runtime Management
+
+This setup prioritizes project-isolated runtimes over global system packages.
+
+### 🟢 Node.js
+We use `fnm` for lightning-fast version switching.
 ```bash
 fnm install --lts
 fnm default lts-latest
 ```
 
-The shell initializes `fnm` when it is installed. The old `nodebrew` path is only used as a fallback when no `node` command is available.
+### 🔵 Python
+We use `uv` for modern, fast Python package management. Avoid pinning global versions; prefer project-local virtualenvs.
 
-For Python, keep `python3` from Homebrew or the system as the base interpreter. Use `uv` or project virtualenvs for project dependencies instead of pinning a global Python path in `.zshrc`.
+---
 
-To review old runtime managers or leftover Homebrew runtime formulae:
+## ⌨️ Neovim Setup
 
-```bash
-make cleanup
-./cleanup-deps --apply
-```
+The editor environment is **Neovim-first**, powered by [lazy.nvim](https://github.com/folke/lazy.nvim).
 
-Cleanup is dry-run by default. Formulae declared in this repo's `Brewfile` are kept out of the cleanup candidates. The apply mode still asks before uninstalling each formula.
+1. Open Neovim: `nvim`
+2. Sync plugins: `:Lazy sync`
+3. Verify health: `:checkhealth`
 
-## Neovim Plugins
+---
 
-Neovim bootstraps [lazy.nvim](https://github.com/folke/lazy.nvim) on first start.
+## 🔒 Secrets
 
-After installation, open Neovim and run:
-
-```vim
-:Lazy sync
-```
-
-Validate the editor setup with:
-
-```vim
-:checkhealth
-```
-
-This repo is Neovim-first. The tracked `.vimrc` is only a small fallback message for plain Vim.
-
-## Tmux
-
-Follow this link for [tmux](https://github.com/tmux/tmux) and [oh-my-tmux](https://github.com/gpakosz/.tmux) pre-installation guide
-
-## Secrets
-
-Do not commit local credentials or tokens. Keep machine-specific secret files outside Git, or use example files with placeholder values.
-
-For shell credentials, copy the example file and edit the local copy:
+Security is handled via `~/.zshrc-secrets`, which is automatically created by the installer but **ignored by Git**.
 
 ```bash
-cp .zshrc-secrets.example ~/.zshrc-secrets
-chmod 600 ~/.zshrc-secrets
+# Example usage in ~/.zshrc-secrets
+export GITHUB_TOKEN="ghp_..."
+export OPENAI_API_KEY="sk-..."
 ```
 
-The installer creates this file automatically when it is missing and never overwrites an existing one.
+---
 
-Then put real values in `~/.zshrc-secrets`:
-
-```bash
-export JIRA_API_TOKEN="..."
-export OPENAI_API_KEY="..."
-```
+<div align="center">
+  <sub>Built with ❤️ for macOS.</sub>
+</div>
