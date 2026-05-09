@@ -27,7 +27,6 @@ export GOPATH=$HOME/go
 export GOBIN=$HOME/go/bin
 export GOCACHE=$HOME/.cache
 export GO111MODULE=on
-export GOPRIVATE="gitlab.com/botnoi-sme,bitbucket.org/botnoi-sme,github.com/botnoi-sme"
 export PATH=$PATH:$GOPATH/bin
 export PATH=$PATH:$GOROOT/bin
 
