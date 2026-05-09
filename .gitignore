@@ -1,7 +1,5 @@
 # Track only selected XDG config directories.
 .config/*
-!.config/alacritty/
-!.config/alacritty/**
 !.config/kitty/
 !.config/kitty/**
 !.config/nvim/

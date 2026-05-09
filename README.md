@@ -3,7 +3,7 @@
 ![screenshot](./assets/screen_shot.png)
 ![screenshot](./assets/screen-shot-homebrew.png)
 
-Personal macOS dotfiles for shell, Git, Vim, Neovim, tmux, Kitty, and Alacritty.
+Personal macOS dotfiles for shell, Git, Vim, Neovim, tmux, and Kitty.
 
 ## Installation
 
@@ -67,14 +67,6 @@ After installation, open Vim and run:
 ```vim
 :PlugInstall
 ```
-
-## Alacritty
-
-[Alacritty](https://github.com/alacritty/alacritty) is terminal emulator that has pretty easy configuration
-
-#### Tip
-
-select theme better with [alacritty-themes](https://www.npmjs.com/package/alacritty-themes)
 
 ## Tmux
 

@@ -27,10 +27,6 @@ optional_commands=(
   zoxide
 )
 
-optional_apps=(
-  Alacritty
-)
-
 missing_required=0
 
 check_command() {
@@ -56,16 +52,6 @@ echo
 echo "Optional tools"
 for command_name in "${optional_commands[@]}"; do
   check_command optional "$command_name"
-done
-
-echo
-echo "Optional apps"
-for app_name in "${optional_apps[@]}"; do
-  if [[ -d "/Applications/${app_name}.app" || -d "${HOME}/Applications/${app_name}.app" ]]; then
-    printf 'ok      %s.app\n' "$app_name"
-  else
-    printf 'missing optional %s.app\n' "$app_name"
-  fi
 done
 
 echo

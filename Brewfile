@@ -16,6 +16,5 @@ brew "vim"
 brew "zoxide"
 brew "zsh"
 
-cask "alacritty"
 cask "font-hack-nerd-font"
 cask "kitty"

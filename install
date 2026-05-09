@@ -131,7 +131,6 @@ ensure_vim_plug() {
 link_file "${DOTFILES_DIR}/.vim" "${HOME}/.vim"
 link_file "${DOTFILES_DIR}/.vimrc" "${HOME}/.vimrc"
 link_file "${DOTFILES_DIR}/.zshrc" "${HOME}/.zshrc"
-link_file "${DOTFILES_DIR}/.config/alacritty/.alacritty.yml" "${HOME}/.alacritty.yml"
 link_file "${DOTFILES_DIR}/.config" "${HOME}/.config"
 link_file "${DOTFILES_DIR}/.gitconfig" "${HOME}/.gitconfig"
 link_file "${DOTFILES_DIR}/.tmux.conf" "${HOME}/.tmux.conf"
