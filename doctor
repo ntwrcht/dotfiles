@@ -78,6 +78,23 @@ else
   notices=$((notices + 1))
 fi
 
+for config_dir in nvim kitty git; do
+  target="${HOME}/.config/${config_dir}"
+  if [[ -L "$target" ]]; then
+    print_result "OK" "~/.config/${config_dir}" "linked"
+  else
+    print_result "NOTE" "~/.config/${config_dir}" "not linked — run ./install"
+    notices=$((notices + 1))
+  fi
+done
+
+if [[ -d "${HOME}/.oh-my-zsh" ]]; then
+  print_result "OK" "oh-my-zsh" "installed"
+else
+  print_result "NOTE" "oh-my-zsh" "missing — run ./install"
+  notices=$((notices + 1))
+fi
+
 if [[ -f "${HOME}/.zshrc-secrets" ]]; then
   print_result "OK" "secrets" "exists"
 else

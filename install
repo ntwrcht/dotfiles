@@ -183,6 +183,26 @@ ensure_zsh_custom_repo() {
   run git clone --depth=1 "$repo_url" "$target_path"
 }
 
+ensure_oh_my_zsh() {
+  local omz_dir="${HOME}/.oh-my-zsh"
+
+  log_header "Oh My Zsh"
+
+  if [[ -d "$omz_dir" ]]; then
+    log_success "Oh My Zsh ready: ${CL_BOLD}${omz_dir}${CL_RESET}"
+    return
+  fi
+
+  log_info "Installing Oh My Zsh: ${CL_BOLD}${omz_dir}${CL_RESET}"
+  if [[ "$DRY_RUN" -eq 1 ]]; then
+    log_info "Would run: RUNZSH=no CHSH=no sh -c \"\$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)\""
+    return
+  fi
+
+  RUNZSH=no CHSH=no sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+  log_success "Oh My Zsh installed."
+}
+
 log_header "Installing Dotfiles"
 link_file "${DOTFILES_DIR}/.vimrc" "${HOME}/.vimrc"
 link_file "${DOTFILES_DIR}/.zshrc" "${HOME}/.zshrc"
@@ -196,6 +216,7 @@ link_file "${DOTFILES_DIR}/.editorconfig" "${HOME}/.editorconfig"
 
 ensure_secrets_file
 ensure_nvim_python_provider
+ensure_oh_my_zsh
 
 log_header "ZSH Themes & Plugins"
 zsh_custom="${HOME}/.oh-my-zsh/custom"
