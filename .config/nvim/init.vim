@@ -32,7 +32,27 @@ require("lazy").setup({
   { "lukas-reineke/indent-blankline.nvim", main = "ibl", opts = {} },
 
   -- Search
-  { "nvim-telescope/telescope.nvim", branch = '0.1.x', dependencies = { 'nvim-lua/plenary.nvim' } },
+  { 
+    "nvim-telescope/telescope.nvim", 
+    branch = '0.1.x', 
+    dependencies = { 
+      'nvim-lua/plenary.nvim',
+      { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' }
+    },
+    config = function()
+      require('telescope').setup{
+        extensions = {
+          fzf = {
+            fuzzy = true,
+            override_generic_sorter = true,
+            override_file_sorter = true,
+            case_mode = "smart_case",
+          }
+        }
+      }
+      require('telescope').load_extension('fzf')
+    end
+  },
 
   -- Workflow
   { "voldikss/vim-floaterm" },
