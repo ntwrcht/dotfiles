@@ -39,12 +39,22 @@ require("lazy").setup({
   { "lukas-reineke/indent-blankline.nvim", main = "ibl", opts = {} },
   {
     "folke/which-key.nvim",
-    event = "VeryLazy",
+    lazy = false,
     init = function()
       vim.o.timeout = true
       vim.o.timeoutlen = 300
     end,
-    opts = {}
+    config = function()
+      local wk = require("which-key")
+      wk.setup()
+      wk.add({
+        { "<leader>f", desc = "Find Files" },
+        { "<leader>r", desc = "Live Grep" },
+        { "<leader>b", desc = "Buffers" },
+        { "<leader>g", desc = "Lazygit" },
+        { "<leader>ll", desc = "Lazy Log" },
+      })
+    end
   },
 
   -- Search
