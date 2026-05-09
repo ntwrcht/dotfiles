@@ -30,10 +30,10 @@ require("lazy").setup({
   { "nvim-treesitter/nvim-treesitter", build = ":TSUpdate" },
   { "lewis6991/gitsigns.nvim" },
   { "lukas-reineke/indent-blankline.nvim", main = "ibl", opts = {} },
-  
+
   -- Search
   { "nvim-telescope/telescope.nvim", branch = '0.1.x', dependencies = { 'nvim-lua/plenary.nvim' } },
-  
+
   -- Workflow
   { "voldikss/vim-floaterm" },
   { "tpope/vim-commentary" },
@@ -44,7 +44,7 @@ require("lazy").setup({
   { "christoomey/vim-tmux-navigator" },
   { "instant-markdown/vim-instant-markdown", ft = "markdown" },
   { "tpope/vim-fugitive" },
-  
+
   -- Tools
   { "aklt/plantuml-syntax" },
   { "tyru/open-browser.vim" },
@@ -184,7 +184,6 @@ let g:floaterm_wintype = "float"
 
 nnoremap <silent> <leader>d :FloatermNew nnn -deH<cr>
 nnoremap <silent> <leader>g :FloatermNew lazygit<cr>
-nnoremap <silent> <leader>ll :FloatermNew git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit<cr>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Prettier
