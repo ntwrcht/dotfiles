@@ -24,6 +24,13 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
+-- Fix for Telescope ft_to_lang error in Neovim 0.11+
+if not vim.treesitter.ft_to_lang then
+  vim.treesitter.ft_to_lang = function(ft)
+    return vim.filetype.get_option(ft, "syntax") or ft
+  end
+end
+
 require("lazy").setup({
   -- Core & UI
   { "nvim-lualine/lualine.nvim", dependencies = { "nvim-tree/nvim-web-devicons" } },
@@ -34,7 +41,7 @@ require("lazy").setup({
   -- Search
   { 
     "nvim-telescope/telescope.nvim", 
-    branch = '0.1.x', 
+    -- master branch handles newer Neovim APIs better
     dependencies = { 
       'nvim-lua/plenary.nvim',
       { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' }
