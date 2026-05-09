@@ -1,6 +1,5 @@
 # Core ZSH and Oh My Zsh settings
 export ZSH="$HOME/.oh-my-zsh"
-UPDATE_ZSH_DAYS=13
 ZSH_CUSTOM=$ZSH/custom
 ZSH_THEME="powerlevel10k/powerlevel10k"
 CASE_SENSITIVE="true"
@@ -15,7 +14,7 @@ NVM_COMPLETION=true
 # Global Environment Variables
 export MANPATH="/usr/local/man:$MANPATH"
 export LANG=en_US.UTF-8
-export ARCHFLAGS="-arch x86_64"
+export ARCHFLAGS="-arch $(uname -m)"
 export DEFAULT_USER="$USER"
 export VISUAL='nvim'
 export EDITOR='nvim'

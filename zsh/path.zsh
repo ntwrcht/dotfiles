@@ -1,11 +1,13 @@
 # PATH configuration
 export PATH=$HOME/bin:/usr/local/bin:$PATH
 
-# JAVA Home 
+# JAVA Home
 export ANDROID_HOME=$HOME/Library/Android/sdk
-export PATH=$PATH:$ANDROID_HOME/tools
-export PATH=$PATH:$ANDROID_HOME/tools/bin
-export PATH=$PATH:$ANDROID_HOME/platform-tools
+if [[ -d "$ANDROID_HOME" ]]; then
+  export PATH=$PATH:$ANDROID_HOME/tools
+  export PATH=$PATH:$ANDROID_HOME/tools/bin
+  export PATH=$PATH:$ANDROID_HOME/platform-tools
+fi
 
 # Python 
 path=("${(@)path:#/opt/homebrew/opt/python@3.12/libexec/bin}")
@@ -28,7 +30,6 @@ export GOBIN=$HOME/go/bin
 export GOCACHE=$HOME/.cache
 export GO111MODULE=on
 export PATH=$PATH:$GOPATH/bin
-export PATH=$PATH:$GOROOT/bin
 
 # CLAUDE PATH
 export PATH="$HOME/.local/bin:$PATH"

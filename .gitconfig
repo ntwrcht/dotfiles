@@ -2,7 +2,7 @@
 	name = Canvas-xxx
 	email = s.worachote@hotmail.com
 [core]
-	excludesfile = /Users/worachotesuwanyothin/.gitignore_global
+	excludesfile = ~/.config/git/ignore
 [difftool "sourcetree"]
 	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
 	path = 
