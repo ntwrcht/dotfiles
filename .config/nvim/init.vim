@@ -55,7 +55,17 @@ require("lazy").setup({
     config = function()
       local wk = require("which-key")
       wk.setup({
-        icons = { rules = false },
+        preset = "modern",
+        win = {
+          border = "rounded",
+          padding = { 1, 2 },
+        },
+        icons = {
+          rules = false,
+        },
+        layout = {
+          align = "center",
+        },
       })
       wk.add({
         { "<leader>f", desc = "Find Files" },
@@ -65,6 +75,22 @@ require("lazy").setup({
         { "<leader>ll", desc = "Lazy Log" },
         { "<leader>ac", desc = "CoC Action" },
         { "<leader>qf", desc = "CoC Fix" },
+        { "<leader>c", desc = "AI Chat" },
+        { "<leader>re", desc = "AI Redo" },
+        { "<leader>cm", desc = "Git Commit Message" },
+        { "<leader>py", desc = "Prettier" },
+        { "<leader>d", desc = "Explorer" },
+        -- Group and hide noisy tab mappings
+        { "<leader>0", hidden = true },
+        { "<leader>1", hidden = true },
+        { "<leader>2", hidden = true },
+        { "<leader>3", hidden = true },
+        { "<leader>4", hidden = true },
+        { "<leader>5", hidden = true },
+        { "<leader>6", hidden = true },
+        { "<leader>7", hidden = true },
+        { "<leader>8", hidden = true },
+        { "<leader>9", hidden = true },
       })
     end
   },
