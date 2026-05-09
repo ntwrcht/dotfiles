@@ -25,19 +25,24 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
-  { "Yggdroot/indentLine" },
+  -- Core & UI
+  { "nvim-lualine/lualine.nvim", dependencies = { "nvim-tree/nvim-web-devicons" } },
+  { "nvim-treesitter/nvim-treesitter", build = ":TSUpdate" },
+  { "lewis6991/gitsigns.nvim" },
+  { "lukas-reineke/indent-blankline.nvim", main = "ibl", opts = {} },
+  
+  -- Workflow
   { "voldikss/vim-floaterm" },
   { "tpope/vim-commentary" },
   { "neoclide/coc.nvim", branch = "release" },
-  { "vim-airline/vim-airline" },
-  { "vim-airline/vim-airline-themes" },
   { "gko/vim-coloresque" },
   { "editorconfig/editorconfig-vim" },
   { "mg979/vim-visual-multi" },
   { "christoomey/vim-tmux-navigator" },
-  { "airblade/vim-gitgutter" },
   { "instant-markdown/vim-instant-markdown", ft = "markdown" },
   { "tpope/vim-fugitive" },
+  
+  -- Tools
   { "aklt/plantuml-syntax" },
   { "tyru/open-browser.vim" },
   { "weirongxu/plantuml-previewer.vim" },
@@ -55,6 +60,25 @@ require("lazy").setup({
   checker = { enabled = false },
   rocks = { enabled = false },
 })
+
+-- Treesitter Configuration
+require'nvim-treesitter.configs'.setup {
+  ensure_installed = { "lua", "vim", "vimdoc", "javascript", "typescript", "go", "python", "json", "yaml", "markdown", "bash" },
+  highlight = { enable = true },
+}
+
+-- Lualine Configuration
+require('lualine').setup {
+  options = {
+    theme = 'auto',
+    section_separators = '',
+    component_separators = '|',
+    icons_enabled = true,
+  }
+}
+
+-- Gitsigns Configuration
+require('gitsigns').setup()
 EOF
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -147,25 +171,6 @@ nnoremap <silent> <leader>f :FloatermNew fzf<cr>
 nmap <Leader>py <Plug>(Prettier)
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Git Gutter
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-hi GitGutterAddLineNr          guibg=#DEFFCD guifg=#505050 ctermfg=2
-hi GitGutterChangeLineNr       guibg=#FBFFCD guifg=#505050 ctermfg=3
-hi GitGutterDeleteLineNr       guibg=#FFD8CB guifg=#505050 ctermfg=1
-hi GitGutterChangeDeleteLineNr guibg=#FBFFCD guifg=#505050 ctermfg=3
-
-hi GitGutterAdd		       guibg=#B4FFB2 guifg=#505050 ctermfg=2
-hi GitGutterChange 	       guibg=#F9FFB2 guifg=#505050 ctermfg=3
-hi GitGutterDelete 	       guibg=#FFBBA6 guifg=#505050 ctermfg=1
-hi GitGutterChangeDeleteLine   guibg=#F9FFB2 guifg=#505050 ctermfg=3
-
-let g:gitgutter_signs = 1
-let g:gitgutter_set_sign_backgrounds = 0
-let g:gitgutter_enabled = 1
-let g:gitgutter_highlight_lines = 0
-let g:gitgutter_highlight_linenrs = 1
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Visual Multi
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let g:VM_leader = '\'
@@ -176,21 +181,6 @@ let g:VM_maps["Visual All"]        = '<leader>a'
 let g:VM_maps["Align"]             = '<leader>A'
 let g:VM_maps["Add Cursor Down"]   = '<C-Down>'
 let g:VM_maps["Add Cursor Up"]     = '<C-Up>'
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Airline
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-let g:airline_theme = "alduin"
-let g:airline_extensions = ['tabline', 'coc', 'fugitiveline', 'wordcount', 'branch']
-let g:airline_highlighting_cache = 1
-let g:airline_powerline_fonts = 0
-let g:airline#extensions#tabline#enabled = 1
-let g:airline#extensions#tabline#show_buffers = 0
-let g:airline#extensions#tabline#show_splits = 0
-let g:airline#extensions#tabline#tab_min_count = 0
-let g:airline#extensions#tabline#show_close_button = 0
-let g:airline#extensions#tabline#tab_nr_type = 1
-let g:airline#extensions#tabline#formatter = 'unique_tail'
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Tmux
