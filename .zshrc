@@ -1,7 +1,7 @@
 ##############################################################
 # => ZSH Startup with Tmux
 ##############################################################
-if command -v tmux &> /dev/null && [ -z "$TMUX" ]; then
+if command -v tmux &> /dev/null && [ -z "$TMUX" ] && [ -z "${DOTFILES_SKIP_TMUX:-}" ]; then
     tmux || tmux new
 fi
 ##############################################################
@@ -130,8 +130,10 @@ git_rebase_dynamic() {
 }
 alias grb="git_rebase_dynamic"
 
-# Load Angular CLI autocompletion.
-source <(ng completion script)
+# Load Angular CLI autocompletion when Node/Angular are healthy.
+if command -v ng >/dev/null 2>&1; then
+  eval "$(ng completion script 2>/dev/null || true)"
+fi
 
 ##############################################################
 # => Local Secrets
