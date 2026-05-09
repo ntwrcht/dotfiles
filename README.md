@@ -44,11 +44,19 @@ brew bundle
 
 Useful tools included in the `Brewfile`:
 
+- [bat](https://github.com/sharkdp/bat)
+- [ddgr](https://github.com/jarun/ddgr)
+- [eza](https://github.com/eza-community/eza)
+- [fd](https://github.com/sharkdp/fd)
 - [nnn](https://github.com/jarun/nnn)
 - [ripgrep](https://github.com/BurntSushi/ripgrep)
 - [lazygit](https://github.com/jesseduffield/lazygit)
 - [fzf](https://github.com/junegunn/fzf)
+- [git-delta](https://github.com/dandavison/delta)
+- [jq](https://github.com/jqlang/jq)
 - [nerd-fonts](https://github.com/ryanoasis/nerd-fonts)
+- [tealdeer](https://github.com/tealdeer-rs/tealdeer)
+- [zoxide](https://github.com/ajeetdsouza/zoxide)
 
 ## Vim Plugins
 

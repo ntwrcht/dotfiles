@@ -9,16 +9,22 @@ required_commands=(
 )
 
 optional_commands=(
+  bat
   brew
   curl
+  ddgr
+  delta
+  eza
+  fd
   nvim
   rg
   fzf
+  jq
   lazygit
   nnn
   kitty
-  ipython
-  googler
+  tldr
+  zoxide
 )
 
 optional_apps=(

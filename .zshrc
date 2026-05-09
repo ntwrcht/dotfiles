@@ -50,7 +50,7 @@ export MANPATH="/usr/local/man:$MANPATH"
 export LANG=en_US.UTF-8
 export ARCHFLAGS="-arch x86_64"
 
-alias lc="colorls -lA --sd"
+alias lc="eza -la --icons --git --group-directories-first"
 export DEFAULT_USER="$USER"
 
 ##############################################################
@@ -103,6 +103,10 @@ export FZF_DEFAULT_OPTS="--color hl:-1:underline,hl+:-1:underline:reverse"
 export FZF_COMPLETION_TRIGGER='~~'
 export FZF_COMPLETION_OPTS='+c -x'
 
+if command -v zoxide >/dev/null 2>&1; then
+  eval "$(zoxide init zsh)"
+fi
+
 ##############################################################
 # => Alias Bash Script
 ##############################################################
@@ -110,6 +114,7 @@ alias config='/usr/bin/git --git-dir=$HOME/.cfg/.git/ --work-tree=$HOME'
 alias vim="nvim"
 alias vi="nvim"
 alias grep="rg"
+alias search="ddgr"
 alias nnn="nnn -dea"
 alias lg="lazygit"
 alias gf='git fetch --all --prune'
