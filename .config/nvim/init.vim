@@ -179,17 +179,21 @@ end
 local telescope_status_ok, telescope = pcall(require, "telescope")
 if telescope_status_ok then
   local builtin = require('telescope.builtin')
-  
-  -- Custom function to include hidden files
+  local actions = require('telescope.actions')
+
+  local tab_attach = function(_, _)
+    actions.select_default:replace(actions.select_tab)
+    return true
+  end
+
   local find_files_with_hidden = function()
-    builtin.find_files({ hidden = true, no_ignore = false })
+    builtin.find_files({ hidden = true, no_ignore = false, attach_mappings = tab_attach })
   end
 
   local live_grep_with_hidden = function()
-    builtin.live_grep({ 
-      additional_args = function(opts)
-        return {"--hidden"}
-      end 
+    builtin.live_grep({
+      additional_args = function() return {"--hidden"} end,
+      attach_mappings = tab_attach,
     })
   end
 
