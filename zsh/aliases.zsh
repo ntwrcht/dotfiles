@@ -36,7 +36,6 @@ alias reload="source ~/.zshrc"
 alias myip="curl -s ifconfig.me && echo"
 alias rm="rm -i" # Safety first
 alias ports="sudo lsof -iTCP -sTCP:LISTEN -P -n"
-alias config='/usr/bin/git --git-dir=$HOME/.cfg/.git/ --work-tree=$HOME'
 
 # --- Containers ---
 alias d="docker"
