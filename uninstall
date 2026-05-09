@@ -103,6 +103,7 @@ unlink_file "${HOME}/.config"
 unlink_file "${HOME}/.gitconfig"
 unlink_file "${HOME}/.tmux.conf"
 unlink_file "${HOME}/.tmux.conf.local"
+unlink_file "${HOME}/.editorconfig"
 
 log_header "Additional Cleanup"
 

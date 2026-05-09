@@ -182,6 +182,7 @@ link_file "${DOTFILES_DIR}/.config" "${HOME}/.config"
 link_file "${DOTFILES_DIR}/.gitconfig" "${HOME}/.gitconfig"
 link_file "${DOTFILES_DIR}/.tmux.conf" "${HOME}/.tmux.conf"
 link_file "${DOTFILES_DIR}/.tmux.conf.local" "${HOME}/.tmux.conf.local"
+link_file "${DOTFILES_DIR}/.editorconfig" "${HOME}/.editorconfig"
 
 ensure_secrets_file
 ensure_nvim_python_provider

@@ -80,9 +80,6 @@ set so=8
 set number
 set numberwidth=8
 set signcolumn=yes
-set tabstop=4
-set shiftwidth=4
-set expandtab
 set textwidth=161
 set colorcolumn=161
 set cursorline
