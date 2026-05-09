@@ -342,13 +342,13 @@ nnoremap <leader>cm :GitCommitMessage<CR>
 function! GitCommitMessageFn()
   let l:range = 0
   let l:diff = system('git diff HEAD')
-  let l:prompt = "Hey, I just made some code changes. Here’s the diff. Can you suggest a short, clear commit message for it?\n" . l:diff
+  let l:prompt = "Analyze the following git diff and generate a conventional commit message.\n\nDiff:\n" . l:diff
   let l:config = {
   \  "engine": "chat",
   \  "options": {
   \    "model": "gpt-4.1-mini",
-  \    "initial_prompt": ">>> system\nYou are experienced in software development. Generate a concise git commit message from the diff provided below. Write it in a clean and concise way so that the team can clearly understand the commit more easily. The output should be a conventional commit pattern.",
-  \    "temperature": 1,
+  \    "initial_prompt": ">>> system\nYou are a senior software engineer. Generate a single conventional commit message from the diff provided.\n\nFormat: <type>(<scope>): <description>\n\nRules:\n- type: feat, fix, refactor, perf, style, test, docs, chore, ci, build, revert\n- scope: the module, component, or file affected (lowercase, concise)\n- description: imperative mood, lowercase, no period, max 72 chars\n- Output only the commit message — no explanation, no markdown, no quotes.",
+  \    "temperature": 0.3,
   \  }
   \}
   call vim_ai#AIRun(l:range, l:config, l:prompt)
