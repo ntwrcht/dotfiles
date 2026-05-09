@@ -1,0 +1,179 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+APPLY=0
+ALL=0
+DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+usage() {
+  cat <<'USAGE'
+Usage: ./cleanup-deps [--apply] [--all]
+
+Reviews Homebrew leaf formulae that are likely runtime/version-manager leftovers.
+By default this is a dry run and does not uninstall anything.
+
+Options:
+  --apply    Prompt before uninstalling selected formulae.
+  --all      Review all Homebrew leaves, not only runtime-related formulae.
+  -h, --help Show this help.
+USAGE
+}
+
+for arg in "$@"; do
+  case "$arg" in
+    --apply)
+      APPLY=1
+      ;;
+    --all)
+      ALL=1
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      echo "Unknown option: $arg" >&2
+      usage
+      exit 1
+      ;;
+  esac
+done
+
+if ! command -v brew >/dev/null 2>&1; then
+  echo "Missing Homebrew." >&2
+  exit 1
+fi
+
+is_runtime_candidate() {
+  local formula="$1"
+
+  case "$formula" in
+    node|node@*|nodebrew|fnm|nvm|volta|yarn|pnpm|corepack)
+      return 0
+      ;;
+    python|python@*|python-certifi|pyenv|pipx|uv|virtualenv)
+      return 0
+      ;;
+  esac
+
+  return 1
+}
+
+contains() {
+  local needle="$1"
+  shift
+  local item
+
+  for item in "$@"; do
+    if [[ "$item" == "$needle" ]]; then
+      return 0
+    fi
+  done
+
+  return 1
+}
+
+confirm() {
+  local prompt="$1"
+  local answer
+
+  read -r -p "$prompt [y/N] " answer
+  case "$answer" in
+    y|Y|yes|YES)
+      return 0
+      ;;
+    *)
+      return 1
+      ;;
+  esac
+}
+
+print_header() {
+  local title="$1"
+
+  echo
+  echo "$title"
+  printf '%s\n' "----------------------------------------"
+}
+
+leaves=()
+while IFS= read -r formula; do
+  leaves+=("$formula")
+done < <(brew leaves | sort)
+
+managed_formulae=()
+if [[ -f "${DOTFILES_DIR}/Brewfile" ]]; then
+  while IFS= read -r formula; do
+    managed_formulae+=("$formula")
+  done < <(sed -n 's/^brew "\([^"]*\)".*/\1/p' "${DOTFILES_DIR}/Brewfile" | sort)
+fi
+
+candidates=()
+
+for formula in "${leaves[@]}"; do
+  if contains "$formula" "${managed_formulae[@]}"; then
+    continue
+  fi
+
+  if [[ "$ALL" -eq 1 ]] || is_runtime_candidate "$formula"; then
+    candidates+=("$formula")
+  fi
+done
+
+echo "Homebrew Dependency Cleanup"
+if [[ "$APPLY" -eq 1 ]]; then
+  echo "Mode: apply with confirmation"
+else
+  echo "Mode: dry run"
+fi
+
+if [[ "${#candidates[@]}" -eq 0 ]]; then
+  echo
+  echo "No matching Homebrew leaf formulae found."
+  exit 0
+fi
+
+print_header "Candidates"
+for formula in "${candidates[@]}"; do
+  version="$(brew list --versions "$formula" 2>/dev/null || true)"
+  printf '%-20s %s\n' "$formula" "${version#"$formula "}"
+done
+
+print_header "Review"
+for formula in "${candidates[@]}"; do
+  echo
+  echo "$formula"
+
+  dependents="$(brew uses --installed "$formula" 2>/dev/null || true)"
+  if [[ -n "$dependents" ]]; then
+    echo "Installed dependents:"
+    echo "$dependents" | sed 's/^/  - /'
+    echo "Skip: another installed formula still references this."
+    continue
+  fi
+
+  if [[ "$APPLY" -eq 1 ]]; then
+    if confirm "Uninstall $formula?"; then
+      brew uninstall "$formula"
+    else
+      echo "Skip: $formula"
+    fi
+  else
+    echo "Would ask before running: brew uninstall $formula"
+  fi
+done
+
+print_header "Aftercare"
+if [[ "$APPLY" -eq 1 ]]; then
+  if confirm "Run brew autoremove to remove unused dependencies?"; then
+    brew autoremove
+  else
+    echo "Skip: brew autoremove"
+  fi
+else
+  echo "After uninstalling selected formulae, review unused dependencies with:"
+  echo "  brew autoremove --dry-run"
+fi
+
+echo
+echo "Done."

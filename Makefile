@@ -1,4 +1,4 @@
-.PHONY: install dry-run doctor deps
+.PHONY: install dry-run doctor deps cleanup cleanup-apply
 
 install:
 	./install
@@ -11,3 +11,9 @@ doctor:
 
 deps:
 	brew bundle
+
+cleanup:
+	./cleanup-deps
+
+cleanup-apply:
+	./cleanup-deps --apply

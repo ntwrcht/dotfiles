@@ -104,20 +104,33 @@ ensure_secrets_file() {
 ensure_nvim_python_provider() {
   local venv_dir="${HOME}/.local/share/nvim/python-provider"
   local python_bin="${venv_dir}/bin/python"
+  local python3_bin=""
 
   if [[ -x "$python_bin" ]] && "$python_bin" -c 'import pynvim' >/dev/null 2>&1; then
     echo "Neovim Python provider exists: $python_bin"
     return
   fi
 
+  for candidate in /opt/homebrew/bin/python3 /usr/local/bin/python3 python3; do
+    if command -v "$candidate" >/dev/null 2>&1; then
+      python3_bin="$(command -v "$candidate")"
+      break
+    fi
+  done
+
+  if [[ -z "$python3_bin" ]]; then
+    echo "Missing python3: install it with Homebrew or your system package manager." >&2
+    exit 1
+  fi
+
   echo "Installing Neovim Python provider: $venv_dir"
   if [[ "$DRY_RUN" -eq 1 ]]; then
-    echo "[dry-run] /opt/homebrew/bin/python3 -m venv $venv_dir"
+    echo "[dry-run] $python3_bin -m venv $venv_dir"
     echo "[dry-run] $python_bin -m pip install --upgrade pip pynvim"
     return
   fi
 
-  /opt/homebrew/bin/python3 -m venv "$venv_dir"
+  "$python3_bin" -m venv "$venv_dir"
   "$python_bin" -m pip install --upgrade pip pynvim
 }
 

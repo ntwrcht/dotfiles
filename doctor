@@ -4,7 +4,7 @@ set -euo pipefail
 required_commands=(
   git
   zsh
-  vim
+  nvim
   tmux
 )
 
@@ -16,14 +16,16 @@ optional_commands=(
   delta
   eza
   fd
-  nvim
+  fnm
   rg
+  vim
   fzf
   jq
   lazygit
   nnn
   kitty
   tldr
+  uv
   zoxide
 )
 
@@ -106,6 +108,28 @@ if [[ -x "${HOME}/.local/share/nvim/python-provider/bin/python" ]] &&
   print_result "OK" "nvim python" "pynvim installed"
 else
   print_result "NOTE" "nvim python" "run ./install"
+  notices=$((notices + 1))
+fi
+
+print_header "Runtime managers"
+if command -v node >/dev/null 2>&1; then
+  print_result "OK" "node" "$(node --version) at $(command -v node)"
+else
+  print_result "NOTE" "node" "install fnm and run: fnm install --lts"
+  notices=$((notices + 1))
+fi
+
+if command -v python3 >/dev/null 2>&1; then
+  print_result "OK" "python3" "$(python3 --version 2>&1) at $(command -v python3)"
+else
+  print_result "NOTE" "python3" "missing"
+  notices=$((notices + 1))
+fi
+
+if command -v uv >/dev/null 2>&1; then
+  print_result "OK" "uv" "$(uv --version)"
+else
+  print_result "NOTE" "uv" "optional Python project manager"
   notices=$((notices + 1))
 fi
 

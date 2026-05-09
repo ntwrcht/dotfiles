@@ -75,12 +75,22 @@ export PATH=$PATH:$ANDROID_HOME/platform-tools
 ##############################################################
 # => Python 
 ##############################################################
-export PATH="/opt/homebrew/opt/python@3.12/libexec/bin:$PATH"
+# Use the system/Homebrew python3 by default. Prefer project-local
+# virtualenvs or uv-managed environments for application dependencies.
+path=("${(@)path:#/opt/homebrew/opt/python@3.12/libexec/bin}")
+if command -v uv >/dev/null 2>&1; then
+  export UV_LINK_MODE=copy
+fi
 
 ##############################################################
 # => Node 
 ##############################################################
-export PATH="$PATH:$HOME/.nodebrew/current/bin"
+path=("${(@)path:#$HOME/.nodebrew/current/bin}")
+if command -v fnm >/dev/null 2>&1; then
+  eval "$(fnm env --use-on-cd --shell zsh)"
+elif ! command -v node >/dev/null 2>&1 && [[ -d "$HOME/.nodebrew/current/bin" ]]; then
+  export PATH="$HOME/.nodebrew/current/bin:$PATH"
+fi
 export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
 
 ##############################################################
