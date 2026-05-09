@@ -12,13 +12,6 @@ DISABLE_UNTRACKED_FILES_DIRTY="true"
 NVM_LAZY_LOAD=true
 NVM_COMPLETION=true
 
-# Custom Powerlevel9k
-POWERLEVEL9K_MODE="nerdfont-complete"
-POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(os_icon dir vcs)
-POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status root_indicator background_jobs time)
-POWERLEVEL9K_TIME_BACKGROUND="060"
-POWERLEVEL9K_TIME_FOREGROUND="015"
-
 # Global Environment Variables
 export MANPATH="/usr/local/man:$MANPATH"
 export LANG=en_US.UTF-8
