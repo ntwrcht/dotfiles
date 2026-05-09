@@ -175,6 +175,20 @@ ensure_nvim_python_provider() {
   log_success "Neovim Python provider installed."
 }
 
+ensure_zsh_custom_repo() {
+  local repo_url="$1"
+  local target_path="$2"
+  local name="$3"
+
+  if [[ -d "$target_path" ]]; then
+    log_success "ZSH $name ready: ${CL_BOLD}${target_path}${CL_RESET}"
+    return
+  fi
+
+  log_info "Cloning ZSH $name: ${CL_BOLD}${target_path}${CL_RESET}"
+  run git clone --depth=1 "$repo_url" "$target_path"
+}
+
 log_header "Installing Dotfiles"
 link_file "${DOTFILES_DIR}/.vimrc" "${HOME}/.vimrc"
 link_file "${DOTFILES_DIR}/.zshrc" "${HOME}/.zshrc"
@@ -186,6 +200,12 @@ link_file "${DOTFILES_DIR}/.editorconfig" "${HOME}/.editorconfig"
 
 ensure_secrets_file
 ensure_nvim_python_provider
+
+log_header "ZSH Themes & Plugins"
+zsh_custom="${HOME}/.oh-my-zsh/custom"
+ensure_zsh_custom_repo "https://github.com/romkatv/powerlevel10k.git" "${zsh_custom}/themes/powerlevel10k" "Theme (p10k)"
+ensure_zsh_custom_repo "https://github.com/zsh-users/zsh-syntax-highlighting.git" "${zsh_custom}/plugins/zsh-syntax-highlighting" "Plugin (syntax)"
+ensure_zsh_custom_repo "https://github.com/zsh-users/zsh-autosuggestions.git" "${zsh_custom}/plugins/zsh-autosuggestions" "Plugin (autosuggestions)"
 
 printf "\n${CL_BOLD}${CL_GREEN}✨ Installation Complete!${CL_RESET}\n"
 if [[ -d "$BACKUP_DIR" ]]; then

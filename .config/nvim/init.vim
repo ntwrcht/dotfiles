@@ -31,6 +31,9 @@ require("lazy").setup({
   { "lewis6991/gitsigns.nvim" },
   { "lukas-reineke/indent-blankline.nvim", main = "ibl", opts = {} },
   
+  -- Search
+  { "nvim-telescope/telescope.nvim", branch = '0.1.x', dependencies = { 'nvim-lua/plenary.nvim' } },
+  
   -- Workflow
   { "voldikss/vim-floaterm" },
   { "tpope/vim-commentary" },
@@ -87,6 +90,16 @@ end
 local gitsigns_status_ok, gitsigns = pcall(require, "gitsigns")
 if gitsigns_status_ok then
   gitsigns.setup()
+end
+
+-- Telescope Configuration
+local telescope_status_ok, telescope = pcall(require, "telescope")
+if telescope_status_ok then
+  local builtin = require('telescope.builtin')
+  vim.keymap.set('n', '<leader>f', builtin.find_files, {})
+  vim.keymap.set('n', '<leader>r', builtin.live_grep, {})
+  vim.keymap.set('n', '<leader>b', builtin.buffers, {})
+  vim.keymap.set('n', '<leader>sh', builtin.help_tags, {})
 end
 EOF
 
@@ -170,9 +183,7 @@ let g:floaterm_complete_options = {'shortcut': 'floaterm', 'priority': 5, 'filte
 let g:floaterm_wintype = "float"
 
 nnoremap <silent> <leader>d :FloatermNew nnn -deH<cr>
-nnoremap <silent> <leader>r :FloatermNew rg .<cr>
 nnoremap <silent> <leader>g :FloatermNew lazygit<cr>
-nnoremap <silent> <leader>f :FloatermNew fzf<cr>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Prettier

@@ -2,7 +2,7 @@
 export ZSH="$HOME/.oh-my-zsh"
 UPDATE_ZSH_DAYS=13
 ZSH_CUSTOM=$ZSH/custom
-ZSH_THEME="powerlevel9k/powerlevel9k"
+ZSH_THEME="powerlevel10k/powerlevel10k"
 CASE_SENSITIVE="true"
 HYPHEN_INSENSITIVE="true"
 DISABLE_AUTO_UPDATE="true"
