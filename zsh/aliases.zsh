@@ -33,7 +33,8 @@ alias grb="git_rebase_dynamic"
 
 # --- System & Utilities ---
 alias reload="source ~/.zshrc"
-alias myip="curl -s ifconfig.me && echo"
+alias myip="curl -4 -s ifconfig.me && echo"
+alias myip6="curl -6 -s ifconfig.me && echo"
 alias rm="rm -i" # Safety first
 alias ports="sudo lsof -iTCP -sTCP:LISTEN -P -n"
 
