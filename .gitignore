@@ -4,8 +4,6 @@
 !.config/kitty/**
 !.config/nvim/
 !.config/nvim/**
-/.config/nvim/site/autoload/plug.vim
-/.local/share/nvim/site/autoload/plug.vim
 /nvim.log
 
 # non-dot files

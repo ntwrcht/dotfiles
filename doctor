@@ -94,10 +94,10 @@ else
   notices=$((notices + 1))
 fi
 
-if [[ -f "${HOME}/.local/share/nvim/site/autoload/plug.vim" ]]; then
-  print_result "OK" "vim-plug" "installed"
+if [[ -d "${HOME}/.local/share/nvim/lazy/lazy.nvim" ]]; then
+  print_result "OK" "lazy.nvim" "installed"
 else
-  print_result "NOTE" "vim-plug" "missing"
+  print_result "NOTE" "lazy.nvim" "will bootstrap on first nvim start"
   notices=$((notices + 1))
 fi
 

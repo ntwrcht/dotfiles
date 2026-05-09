@@ -58,14 +58,14 @@ Useful tools included in the `Brewfile`:
 - [tealdeer](https://github.com/tealdeer-rs/tealdeer)
 - [zoxide](https://github.com/ajeetdsouza/zoxide)
 
-## Vim Plugins
+## Neovim Plugins
 
-The installer bootstraps [vim-plug](https://github.com/junegunn/vim-plug) for Neovim when it is missing.
+Neovim bootstraps [lazy.nvim](https://github.com/folke/lazy.nvim) on first start.
 
 After installation, open Neovim and run:
 
 ```vim
-:PlugInstall
+:Lazy sync
 ```
 
 ## Tmux

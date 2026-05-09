@@ -101,39 +101,6 @@ ensure_secrets_file() {
   echo "Edit $target and replace the placeholder values."
 }
 
-ensure_vim_plug() {
-  local target="${HOME}/.local/share/nvim/site/autoload/plug.vim"
-  local legacy_source="${HOME}/.vim/autoload/plug.vim"
-  local url="https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim"
-
-  if [[ -f "$target" ]]; then
-    echo "vim-plug exists: $target"
-    return
-  fi
-
-  echo "Installing vim-plug: $target"
-  run mkdir -p "$(dirname "$target")"
-
-  if [[ -f "$legacy_source" ]]; then
-    run cp "$legacy_source" "$target"
-    return
-  fi
-
-  if [[ "$DRY_RUN" -eq 1 ]]; then
-    echo "[dry-run] download $url -> $target"
-    return
-  fi
-
-  if command -v curl >/dev/null 2>&1; then
-    curl -fLo "$target" --create-dirs "$url"
-  elif command -v wget >/dev/null 2>&1; then
-    wget -O "$target" "$url"
-  else
-    echo "Missing curl or wget. Install one of them, then rerun ./install." >&2
-    exit 1
-  fi
-}
-
 link_file "${DOTFILES_DIR}/.vimrc" "${HOME}/.vimrc"
 link_file "${DOTFILES_DIR}/.zshrc" "${HOME}/.zshrc"
 link_file "${DOTFILES_DIR}/.config" "${HOME}/.config"
@@ -141,7 +108,6 @@ link_file "${DOTFILES_DIR}/.gitconfig" "${HOME}/.gitconfig"
 link_file "${DOTFILES_DIR}/.tmux.conf" "${HOME}/.tmux.conf"
 link_file "${DOTFILES_DIR}/.tmux.conf.local" "${HOME}/.tmux.conf.local"
 ensure_secrets_file
-ensure_vim_plug
 
 echo
 echo "Done."

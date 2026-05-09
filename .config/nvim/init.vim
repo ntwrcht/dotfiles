@@ -1,39 +1,61 @@
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => VIM Plug
+" => lazy.nvim
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-call plug#begin('~/.local/share/nvim/plugged')
-Plug 'Yggdroot/indentLine'
-Plug 'voldikss/vim-floaterm'
-Plug 'tpope/vim-commentary'
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
-Plug 'vim-airline/vim-airline'
-Plug 'vim-airline/vim-airline-themes'
-Plug 'gko/vim-coloresque'
-Plug 'editorconfig/editorconfig-vim'
-Plug 'mg979/vim-visual-multi'
-Plug 'christoomey/vim-tmux-navigator'
-Plug 'airblade/vim-gitgutter'
-Plug 'instant-markdown/vim-instant-markdown', {'for': 'markdown'}
-Plug 'tpope/vim-fugitive'
-Plug 'aklt/plantuml-syntax'
-Plug 'tyru/open-browser.vim'
-Plug 'weirongxu/plantuml-previewer.vim'
-Plug 'pangloss/vim-javascript'
-Plug 'leafgarland/typescript-vim'
-Plug 'maxmellon/vim-jsx-pretty'
-Plug 'jparise/vim-graphql'
-Plug 'peitalin/vim-jsx-typescript'
-Plug 'prettier/vim-prettier', { 'do': 'yarn install --frozen-lockfile --production' }
-Plug 'darrikonn/vim-gofmt', { 'do': ':GoUpdateBinaries' }
-Plug 'leafOfTree/vim-vue-plugin'
-Plug 'madox2/vim-ai'
-call plug#end()
+let mapleader = ","
+let maplocalleader = ","
+
+lua << EOF
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not (vim.uv or vim.loop).fs_stat(lazypath) then
+  local lazyrepo = "https://github.com/folke/lazy.nvim.git"
+  local out = vim.fn.system({ "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
+  if vim.v.shell_error ~= 0 then
+    vim.api.nvim_echo({
+      { "Failed to clone lazy.nvim:\n", "ErrorMsg" },
+      { out, "WarningMsg" },
+      { "\nPress any key to exit..." },
+    }, true, {})
+    vim.fn.getchar()
+    os.exit(1)
+  end
+end
+vim.opt.rtp:prepend(lazypath)
+
+require("lazy").setup({
+  { "Yggdroot/indentLine" },
+  { "voldikss/vim-floaterm" },
+  { "tpope/vim-commentary" },
+  { "neoclide/coc.nvim", branch = "release" },
+  { "vim-airline/vim-airline" },
+  { "vim-airline/vim-airline-themes" },
+  { "gko/vim-coloresque" },
+  { "editorconfig/editorconfig-vim" },
+  { "mg979/vim-visual-multi" },
+  { "christoomey/vim-tmux-navigator" },
+  { "airblade/vim-gitgutter" },
+  { "instant-markdown/vim-instant-markdown", ft = "markdown" },
+  { "tpope/vim-fugitive" },
+  { "aklt/plantuml-syntax" },
+  { "tyru/open-browser.vim" },
+  { "weirongxu/plantuml-previewer.vim" },
+  { "pangloss/vim-javascript" },
+  { "leafgarland/typescript-vim" },
+  { "maxmellon/vim-jsx-pretty" },
+  { "jparise/vim-graphql" },
+  { "peitalin/vim-jsx-typescript" },
+  { "prettier/vim-prettier", build = "yarn install --frozen-lockfile --production" },
+  { "darrikonn/vim-gofmt", build = ":GoUpdateBinaries" },
+  { "leafOfTree/vim-vue-plugin" },
+  { "madox2/vim-ai" },
+}, {
+  install = { colorscheme = { "xcode_dark", "habamax" } },
+  checker = { enabled = false },
+})
+EOF
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => General
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-let mapleader = ","
-let maplocalleader = ","
 set updatetime=200
 set timeoutlen=1000 ttimeoutlen=50
 set history=10000
@@ -294,8 +316,6 @@ inoremap <nowait><expr> <C-b> coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(
 command! -nargs=0 Format :call CocAction('format')
 command! -nargs=? Fold :call CocAction('fold', <f-args>)
 command! -nargs=0 OR   :call CocAction('runCommand', 'editor.action.organizeImport')
-
-set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
 
 inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm() : "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
 inoremap <silent><expr> <C-x><C-z> coc#pum#visible() ? coc#pum#stop() : "\<C-x>\<C-z>"
