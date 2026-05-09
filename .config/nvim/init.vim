@@ -62,23 +62,32 @@ require("lazy").setup({
 })
 
 -- Treesitter Configuration
-require'nvim-treesitter.configs'.setup {
-  ensure_installed = { "lua", "vim", "vimdoc", "javascript", "typescript", "go", "python", "json", "yaml", "markdown", "bash" },
-  highlight = { enable = true },
-}
+local status_ok, ts = pcall(require, "nvim-treesitter.configs")
+if status_ok then
+  ts.setup {
+    ensure_installed = { "lua", "vim", "vimdoc", "javascript", "typescript", "go", "python", "json", "yaml", "markdown", "bash" },
+    highlight = { enable = true },
+  }
+end
 
 -- Lualine Configuration
-require('lualine').setup {
-  options = {
-    theme = 'auto',
-    section_separators = '',
-    component_separators = '|',
-    icons_enabled = true,
+local lualine_status_ok, lualine = pcall(require, "lualine")
+if lualine_status_ok then
+  lualine.setup {
+    options = {
+      theme = 'auto',
+      section_separators = '',
+      component_separators = '|',
+      icons_enabled = true,
+    }
   }
-}
+end
 
 -- Gitsigns Configuration
-require('gitsigns').setup()
+local gitsigns_status_ok, gitsigns = pcall(require, "gitsigns")
+if gitsigns_status_ok then
+  gitsigns.setup()
+end
 EOF
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
