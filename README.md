@@ -101,7 +101,7 @@ Security is handled via `~/.zshrc-secrets`, which is automatically created by th
 
 ```bash
 # Example usage in ~/.zshrc-secrets
-export GITHUB_TOKEN="ghp_..."
+export JIRA_API_TOKEN="your-jira-api-token"
 export OPENAI_API_KEY="sk-..."
 ```
 
