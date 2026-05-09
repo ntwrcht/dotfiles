@@ -29,6 +29,7 @@ alias gbm='git branch --merged'
 alias gbnm='git branch --no-merged'
 alias gbd='git branch --merged | grep -v "\*" | grep -v "main\|master" | xargs -n 1 git branch -D'
 alias gl="git log --pretty=oneline"
+alias llog="git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
 alias grb="git_rebase_dynamic"
 
 # --- System & Utilities ---

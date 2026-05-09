@@ -184,6 +184,7 @@ let g:floaterm_wintype = "float"
 
 nnoremap <silent> <leader>d :FloatermNew nnn -deH<cr>
 nnoremap <silent> <leader>g :FloatermNew lazygit<cr>
+nnoremap <silent> <leader>ll :FloatermNew git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit<cr>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Prettier
