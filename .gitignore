@@ -14,6 +14,7 @@
 /.env
 /.env.*
 /.zshrc-secrets
+/.zshrc.local
 /*token*
 /*credentials*
 /.config/openai.token
