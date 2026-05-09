@@ -26,6 +26,7 @@ git clone git@github.com:Canvas-xxx/dotfiles.git ~/.dotfiles && cd ~/.dotfiles &
 | Command | Source | Description |
 | :--- | :--- | :--- |
 | `make install` | [`install`](./install) | Install or update all symlinks |
+| `make uninstall` | [`uninstall`](./uninstall) | Remove all managed symlinks |
 | `make doctor` | [`doctor`](./doctor) | Run diagnostic check on tools and paths |
 | `make deps` | [`Brewfile`](./Brewfile) | Install dependencies via Homebrew |
 | `make cleanup` | [`cleanup-deps`](./cleanup-deps) | Identify and remove orphaned runtimes |

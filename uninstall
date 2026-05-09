@@ -1,0 +1,131 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# --- Colors & Symbols ---
+CL_RED='\033[0;31m'
+CL_GREEN='\033[0;32m'
+CL_YELLOW='\033[0;33m'
+CL_BLUE='\033[0;34m'
+CL_MAGENTA='\033[0;35m'
+CL_CYAN='\033[0;36m'
+CL_BOLD='\033[1m'
+CL_RESET='\033[0m'
+
+SYM_OK="✔"
+SYM_ERR="✖"
+SYM_INFO="ℹ"
+SYM_WARN="⚠"
+SYM_TRASH="🗑"
+
+# --- Configuration ---
+DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DRY_RUN=0
+
+# --- Helper Functions ---
+log_info() { printf "${CL_BLUE}${SYM_INFO} %b${CL_RESET}\n" "$1"; }
+log_success() { printf "${CL_GREEN}${SYM_OK} %b${CL_RESET}\n" "$1"; }
+log_warn() { printf "${CL_YELLOW}${SYM_WARN} %b${CL_RESET}\n" "$1"; }
+log_error() { printf "${CL_RED}${SYM_ERR} %b${CL_RESET}\n" "$1"; }
+log_header() { printf "\n${CL_BOLD}${CL_MAGENTA}==> %b${CL_RESET}\n" "$1"; }
+
+usage() {
+  cat <<USAGE
+${CL_BOLD}Dotfiles Uninstaller${CL_RESET}
+
+Usage: ./uninstall [--dry-run]
+
+Removes symlinks created by the installer.
+Backups in ~/.dotfiles-backup are NOT removed.
+
+Options:
+  --dry-run   Show what would be removed without modifying files.
+  -h, --help  Show this help.
+USAGE
+}
+
+for arg in "$@"; do
+  case "$arg" in
+    --dry-run) DRY_RUN=1 ;;
+    -h|--help) usage; exit 0 ;;
+    *) log_error "Unknown option: $arg"; usage; exit 1 ;;
+  esac
+done
+
+if [[ "$DRY_RUN" -eq 1 ]]; then
+  log_warn "Running in DRY-RUN mode. No changes will be made."
+fi
+
+run() {
+  if [[ "$DRY_RUN" -eq 1 ]]; then
+    printf "${CL_CYAN}[dry-run]${CL_RESET} rm %q\n" "$1"
+  else
+    rm "$1"
+  fi
+}
+
+unlink_file() {
+  local target="$1"
+
+  if [[ -L "$target" ]]; then
+    # Check if it points to our dotfiles directory
+    local link_source
+    link_source="$(readlink "$target")"
+    if [[ "$link_source" == "$DOTFILES_DIR"* ]]; then
+      log_info "${SYM_TRASH} Unlinking: ${CL_BOLD}${target}${CL_RESET}"
+      run "$target"
+    else
+      log_warn "Skipping: ${CL_BOLD}${target}${CL_RESET} points elsewhere (${link_source})"
+    fi
+  elif [[ -e "$target" ]]; then
+    log_warn "Skipping: ${CL_BOLD}${target}${CL_RESET} is a real file, not a symlink."
+  else
+    log_info "Not found: ${CL_BOLD}${target}${CL_RESET}"
+  fi
+}
+
+confirm() {
+  local prompt="$1"
+  local answer
+  printf "${CL_BOLD}${CL_YELLOW}${SYM_WARN} %s [y/N]${CL_RESET} " "$prompt"
+  read -r answer
+  case "$answer" in
+    y|Y|yes|YES) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
+# --- Execution ---
+log_header "Removing Dotfile Symlinks"
+
+unlink_file "${HOME}/.vimrc"
+unlink_file "${HOME}/.zshrc"
+unlink_file "${HOME}/.config"
+unlink_file "${HOME}/.gitconfig"
+unlink_file "${HOME}/.tmux.conf"
+unlink_file "${HOME}/.tmux.conf.local"
+
+log_header "Additional Cleanup"
+
+if [[ -f "${HOME}/.zshrc-secrets" ]]; then
+  if confirm "Remove secrets file (~/.zshrc-secrets)?"; then
+    run "${HOME}/.zshrc-secrets"
+    log_success "Removed secrets file."
+  fi
+fi
+
+venv_dir="${HOME}/.local/share/nvim/python-provider"
+if [[ -d "$venv_dir" ]]; then
+  if confirm "Remove Neovim Python provider virtualenv?"; then
+    if [[ "$DRY_RUN" -eq 1 ]]; then
+      log_info "${CL_CYAN}[dry-run]${CL_RESET} rm -rf ${venv_dir}"
+    else
+      rm -rf "$venv_dir"
+      log_success "Removed Neovim Python provider."
+    fi
+  fi
+fi
+
+printf "\n${CL_BOLD}${CL_GREEN}✨ Uninstallation Complete!${CL_RESET}\n"
+log_info "Note: Your original files (if any) are still in ${CL_BOLD}~/.dotfiles-backup/${CL_RESET}"
+log_info "You can now safely remove the ${CL_BOLD}${DOTFILES_DIR}${CL_RESET} directory if desired."
+echo
