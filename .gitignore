@@ -4,6 +4,9 @@
 !.config/kitty/**
 !.config/nvim/
 !.config/nvim/**
+/.config/nvim/site/autoload/plug.vim
+/.local/share/nvim/site/autoload/plug.vim
+/nvim.log
 
 # non-dot files
 # /[^.]*
@@ -155,6 +158,7 @@
 /.vim/.netrwhist
 /.vim/autoload/plug.vim
 /.vim/autoload/plug.vim.old
+/.vim/colors/
 /.viminfo
 /.vim/bundle/
 /.vim/plugged/

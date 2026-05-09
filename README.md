@@ -60,9 +60,9 @@ Useful tools included in the `Brewfile`:
 
 ## Vim Plugins
 
-The installer bootstraps [vim-plug](https://github.com/junegunn/vim-plug) when it is missing.
+The installer bootstraps [vim-plug](https://github.com/junegunn/vim-plug) for Neovim when it is missing.
 
-After installation, open Vim and run:
+After installation, open Neovim and run:
 
 ```vim
 :PlugInstall

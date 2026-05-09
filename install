@@ -102,7 +102,8 @@ ensure_secrets_file() {
 }
 
 ensure_vim_plug() {
-  local target="${HOME}/.vim/autoload/plug.vim"
+  local target="${HOME}/.local/share/nvim/site/autoload/plug.vim"
+  local legacy_source="${HOME}/.vim/autoload/plug.vim"
   local url="https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim"
 
   if [[ -f "$target" ]]; then
@@ -112,6 +113,11 @@ ensure_vim_plug() {
 
   echo "Installing vim-plug: $target"
   run mkdir -p "$(dirname "$target")"
+
+  if [[ -f "$legacy_source" ]]; then
+    run cp "$legacy_source" "$target"
+    return
+  fi
 
   if [[ "$DRY_RUN" -eq 1 ]]; then
     echo "[dry-run] download $url -> $target"
@@ -128,7 +134,6 @@ ensure_vim_plug() {
   fi
 }
 
-link_file "${DOTFILES_DIR}/.vim" "${HOME}/.vim"
 link_file "${DOTFILES_DIR}/.vimrc" "${HOME}/.vimrc"
 link_file "${DOTFILES_DIR}/.zshrc" "${HOME}/.zshrc"
 link_file "${DOTFILES_DIR}/.config" "${HOME}/.config"

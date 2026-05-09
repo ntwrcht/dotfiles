@@ -94,7 +94,7 @@ else
   notices=$((notices + 1))
 fi
 
-if [[ -f "${HOME}/.vim/autoload/plug.vim" ]]; then
+if [[ -f "${HOME}/.local/share/nvim/site/autoload/plug.vim" ]]; then
   print_result "OK" "vim-plug" "installed"
 else
   print_result "NOTE" "vim-plug" "missing"
