@@ -123,8 +123,22 @@ end
 local telescope_status_ok, telescope = pcall(require, "telescope")
 if telescope_status_ok then
   local builtin = require('telescope.builtin')
-  vim.keymap.set('n', '<leader>f', builtin.find_files, {})
-  vim.keymap.set('n', '<leader>r', builtin.live_grep, {})
+  
+  -- Custom function to include hidden files
+  local find_files_with_hidden = function()
+    builtin.find_files({ hidden = true, no_ignore = false })
+  end
+
+  local live_grep_with_hidden = function()
+    builtin.live_grep({ 
+      additional_args = function(opts)
+        return {"--hidden"}
+      end 
+    })
+  end
+
+  vim.keymap.set('n', '<leader>f', find_files_with_hidden, {})
+  vim.keymap.set('n', '<leader>r', live_grep_with_hidden, {})
   vim.keymap.set('n', '<leader>b', builtin.buffers, {})
   vim.keymap.set('n', '<leader>sh', builtin.help_tags, {})
 end
