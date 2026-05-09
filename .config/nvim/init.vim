@@ -44,35 +44,11 @@ require("lazy").setup({
   { "lewis6991/gitsigns.nvim" },
   { "lukas-reineke/indent-blankline.nvim", main = "ibl", opts = {} },
   { "echasnovski/mini.icons", version = false },
-  {
-    "folke/which-key.nvim",
-    lazy = false,
-    dependencies = { "echasnovski/mini.icons" },
-    init = function()
-      vim.o.timeout = true
-      vim.o.timeoutlen = 300
-    end,
-    config = function()
-      local wk = require("which-key")
-      wk.setup({
-        icons = {
-          rules = false, -- use rules from mini.icons
-        },
-      })
-      wk.add({
-        { "<leader>f", desc = "Find Files" },
-        { "<leader>r", desc = "Live Grep" },
-        { "<leader>b", desc = "Buffers" },
-        { "<leader>g", desc = "Lazygit" },
-        { "<leader>ll", desc = "Lazy Log" },
-      })
-    end
-  },
+  { "folke/which-key.nvim", lazy = false },
 
   -- Search
   { 
     "nvim-telescope/telescope.nvim", 
-    -- master branch handles newer Neovim APIs better
     dependencies = { 
       'nvim-lua/plenary.nvim',
       { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' }
@@ -172,6 +148,23 @@ if telescope_status_ok then
   vim.keymap.set('n', '<leader>r', live_grep_with_hidden, {})
   vim.keymap.set('n', '<leader>b', builtin.buffers, {})
   vim.keymap.set('n', '<leader>sh', builtin.help_tags, {})
+end
+
+-- Which-Key Configuration (at the end to see all mappings)
+local wk_status_ok, wk = pcall(require, "which-key")
+if wk_status_ok then
+  wk.setup({
+    icons = {
+      rules = false, -- use rules from mini.icons
+    },
+  })
+  wk.add({
+    { "<leader>f", desc = "Find Files" },
+    { "<leader>r", desc = "Live Grep" },
+    { "<leader>b", desc = "Buffers" },
+    { "<leader>g", desc = "Lazygit" },
+    { "<leader>ll", desc = "Lazy Log" },
+  })
 end
 EOF
 
@@ -369,7 +362,7 @@ endfunction
 nnoremap <silent> K :call <SID>show_documentation()<CR>
 
 inoremap <silent><expr> <TAB> pumvisible() ? "\<C-n>" : <SID>check_back_space() ? "\<TAB>" : coc#refresh()
-inorem<SID>check_ap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
 
 " Use `[g` and `]g` to navigate diagnostics
 nmap <silent> [g <Plug>(coc-diagnostic-prev)
