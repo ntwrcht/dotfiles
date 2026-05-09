@@ -1,0 +1,118 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+BACKUP_DIR="${HOME}/.dotfiles-backup/$(date +%Y%m%d-%H%M%S)"
+DRY_RUN=0
+
+usage() {
+  cat <<'USAGE'
+Usage: ./install [--dry-run]
+
+Creates symlinks from this repo into your home directory.
+Existing files are moved to ~/.dotfiles-backup/<timestamp> first.
+
+Options:
+  --dry-run   Show what would change without modifying files.
+  -h, --help  Show this help.
+USAGE
+}
+
+for arg in "$@"; do
+  case "$arg" in
+    --dry-run)
+      DRY_RUN=1
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      echo "Unknown option: $arg" >&2
+      usage
+      exit 1
+      ;;
+  esac
+done
+
+run() {
+  if [[ "$DRY_RUN" -eq 1 ]]; then
+    printf '[dry-run] %q' "$1"
+    shift
+    printf ' %q' "$@"
+    printf '\n'
+  else
+    "$@"
+  fi
+}
+
+ensure_backup_dir() {
+  if [[ "$DRY_RUN" -eq 1 ]]; then
+    echo "[dry-run] mkdir -p ${BACKUP_DIR}"
+  else
+    mkdir -p "$BACKUP_DIR"
+  fi
+}
+
+link_file() {
+  local source="$1"
+  local target="$2"
+  local target_name
+  target_name="$(basename "$target")"
+
+  if [[ ! -e "$source" ]]; then
+    echo "Missing source: $source" >&2
+    exit 1
+  fi
+
+  if [[ -L "$target" && "$(readlink "$target")" == "$source" ]]; then
+    echo "Already linked: $target -> $source"
+    return
+  fi
+
+  if [[ -e "$target" || -L "$target" ]]; then
+    ensure_backup_dir
+    echo "Backing up: $target -> ${BACKUP_DIR}/${target_name}"
+    run mv "$target" "${BACKUP_DIR}/${target_name}"
+  fi
+
+  echo "Linking: $target -> $source"
+  run ln -s "$source" "$target"
+}
+
+ensure_secrets_file() {
+  local source="${DOTFILES_DIR}/.zshrc-secrets.example"
+  local target="${HOME}/.zshrc-secrets"
+
+  if [[ ! -e "$source" ]]; then
+    echo "Missing source: $source" >&2
+    exit 1
+  fi
+
+  if [[ -e "$target" ]]; then
+    echo "Secrets file exists: $target"
+    run chmod 600 "$target"
+    return
+  fi
+
+  echo "Creating secrets file: $target"
+  run cp "$source" "$target"
+  run chmod 600 "$target"
+  echo "Edit $target and replace the placeholder values."
+}
+
+link_file "${DOTFILES_DIR}/.vim" "${HOME}/.vim"
+link_file "${DOTFILES_DIR}/.vimrc" "${HOME}/.vimrc"
+link_file "${DOTFILES_DIR}/.zshrc" "${HOME}/.zshrc"
+link_file "${DOTFILES_DIR}/.config/alacritty/.alacritty.yml" "${HOME}/.alacritty.yml"
+link_file "${DOTFILES_DIR}/.config" "${HOME}/.config"
+link_file "${DOTFILES_DIR}/.gitconfig" "${HOME}/.gitconfig"
+link_file "${DOTFILES_DIR}/.tmux.conf" "${HOME}/.tmux.conf"
+link_file "${DOTFILES_DIR}/.tmux.conf.local" "${HOME}/.tmux.conf.local"
+ensure_secrets_file
+
+echo
+echo "Done."
+if [[ -d "$BACKUP_DIR" ]]; then
+  echo "Backups: $BACKUP_DIR"
+fi

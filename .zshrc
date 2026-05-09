@@ -75,12 +75,12 @@ export PATH=$PATH:$ANDROID_HOME/platform-tools
 ##############################################################
 # => Python 
 ##############################################################
-export PATH="/opt/homebrew/opt/python@3.9/libexec/bin:$PATH"
+export PATH="/opt/homebrew/opt/python@3.12/libexec/bin:$PATH"
 
 ##############################################################
 # => Node 
 ##############################################################
-export PATH=$PATH:$HOME/.nodebrew/current/bin
+export PATH="$PATH:$HOME/.nodebrew/current/bin"
 export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
 
 ##############################################################
@@ -116,6 +116,7 @@ alias gf='git fetch --all --prune'
 alias gb='git branch -a'
 alias gbm='git branch --merged'
 alias gbnm='git branch --no-merged'
+alias gbd='git branch --merged | grep -v "\*" | grep -v "main\|master" | xargs -n 1 git branch -D'
 alias gp="git pull"
 alias gl="git log --pretty=oneline"
 
@@ -128,10 +129,15 @@ alias grb="git_rebase_dynamic"
 source <(ng completion script)
 
 ##############################################################
-# => VIM AI 
+# => Local Secrets
 ##############################################################
-# save api key to `~/.config/openai.token` file
-echo "$TOKEN" > ~/.config/openai.token
+if [ -f "$HOME/.zshrc-secrets" ]; then
+  source "$HOME/.zshrc-secrets"
+fi
 
-# alternatively set it as an environment variable
-export OPENAI_API_KEY="$TOKEN"
+if [ -z "${OPENAI_API_KEY:-}" ] && [ -f "$HOME/.config/openai.token" ]; then
+  export OPENAI_API_KEY="$(cat "$HOME/.config/openai.token")"
+fi
+
+# CLAUDE PATH
+export PATH="$HOME/.local/bin:$PATH"

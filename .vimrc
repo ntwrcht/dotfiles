@@ -223,7 +223,7 @@ function! GitCommitMessageFn()
   \  "engine": "chat",
   \  "options": {
   \    "model": "gpt-4.1-mini",
-  \    "initial_prompt": ">>> system\nYou are experienced in software development. Generate a concise git commit message from the diff provided below. Write it in a clean and concise way so that the team can clearly understand the commit more easily. The output should be a short explanation only.",
+  \    "initial_prompt": ">>> system\nYou are experienced in software development. Generate a concise git commit message from the diff provided below. Write it in a clean and concise way so that the team can clearly understand the commit more easily. The output should be a conventional commit pattern.",
   \    "temperature": 1,
   \  }
   \}
