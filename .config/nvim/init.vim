@@ -1,6 +1,11 @@
 let mapleader = ","
 let maplocalleader = ","
 
+" timeout for mappings and which-key
+set timeout
+set timeoutlen=300
+set ttimeoutlen=50
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => lazy.nvim
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -174,7 +179,6 @@ EOF
 " => General
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set updatetime=200
-set timeoutlen=1000 ttimeoutlen=50
 set history=10000
 set undofile
 set hidden
