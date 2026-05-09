@@ -1,12 +1,38 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# --- Colors & Symbols ---
+CL_RED='\033[0;31m'
+CL_GREEN='\033[0;32m'
+CL_YELLOW='\033[0;33m'
+CL_BLUE='\033[0;34m'
+CL_MAGENTA='\033[0;35m'
+CL_CYAN='\033[0;36m'
+CL_BOLD='\033[1m'
+CL_RESET='\033[0m'
+
+SYM_OK="✔"
+SYM_WARN="⚠"
+SYM_INFO="ℹ"
+SYM_CLEAN="🧹"
+SYM_BREW="🍺"
+
+# --- Configuration ---
 APPLY=0
 ALL=0
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
+# --- Helper Functions ---
+log_info() { printf "${CL_BLUE}${SYM_INFO} %b${CL_RESET}\n" "$1"; }
+log_success() { printf "${CL_GREEN}${SYM_OK} %b${CL_RESET}\n" "$1"; }
+log_warn() { printf "${CL_YELLOW}${SYM_WARN} %b${CL_RESET}\n" "$1"; }
+log_error() { printf "${CL_RED}${SYM_ERR} %b${CL_RESET}\n" "$1"; }
+log_header() { printf "\n${CL_BOLD}${CL_MAGENTA}==> %b${CL_RESET}\n" "$1"; }
+
 usage() {
-  cat <<'USAGE'
+  cat <<USAGE
+${CL_BOLD}Homebrew Dependency Cleanup${CL_RESET}
+
 Usage: ./cleanup-deps [--apply] [--all]
 
 Reviews Homebrew leaf formulae that are likely runtime/version-manager leftovers.
@@ -21,18 +47,14 @@ USAGE
 
 for arg in "$@"; do
   case "$arg" in
-    --apply)
-      APPLY=1
-      ;;
-    --all)
-      ALL=1
-      ;;
+    --apply) APPLY=1 ;;
+    --all)   ALL=1 ;;
     -h|--help)
       usage
       exit 0
       ;;
     *)
-      echo "Unknown option: $arg" >&2
+      printf "${CL_RED}Unknown option: $arg${CL_RESET}\n" >&2
       usage
       exit 1
       ;;
@@ -40,140 +62,109 @@ for arg in "$@"; do
 done
 
 if ! command -v brew >/dev/null 2>&1; then
-  echo "Missing Homebrew." >&2
+  printf "${CL_RED}Missing Homebrew.${CL_RESET}\n" >&2
   exit 1
 fi
 
 is_runtime_candidate() {
   local formula="$1"
-
   case "$formula" in
-    node|node@*|nodebrew|fnm|nvm|volta|yarn|pnpm|corepack)
-      return 0
-      ;;
-    python|python@*|python-certifi|pyenv|pipx|uv|virtualenv)
-      return 0
-      ;;
+    node|node@*|nodebrew|fnm|nvm|volta|yarn|pnpm|corepack) return 0 ;;
+    python|python@*|python-certifi|pyenv|pipx|uv|virtualenv) return 0 ;;
   esac
-
   return 1
 }
 
 contains() {
-  local needle="$1"
-  shift
-  local item
-
+  local needle="$1"; shift
   for item in "$@"; do
-    if [[ "$item" == "$needle" ]]; then
-      return 0
-    fi
+    [[ "$item" == "$needle" ]] && return 0
   done
-
   return 1
 }
 
 confirm() {
   local prompt="$1"
   local answer
-
-  read -r -p "$prompt [y/N] " answer
+  printf "${CL_BOLD}${CL_YELLOW}${SYM_WARN} %s [y/N]${CL_RESET} " "$prompt"
+  read -r answer
   case "$answer" in
-    y|Y|yes|YES)
-      return 0
-      ;;
-    *)
-      return 1
-      ;;
+    y|Y|yes|YES) return 0 ;;
+    *) return 1 ;;
   esac
 }
 
-print_header() {
-  local title="$1"
+# --- Execution ---
+printf "${CL_BOLD}${CL_CYAN}${SYM_CLEAN} Dependency Cleanup${CL_RESET}\n"
 
-  echo
-  echo "$title"
-  printf '%s\n' "----------------------------------------"
-}
+if [[ "$APPLY" -eq 1 ]]; then
+  log_warn "Mode: APPLY (will prompt for uninstallation)"
+else
+  log_info "Mode: DRY RUN (no changes will be made)"
+fi
 
 leaves=()
-while IFS= read -r formula; do
-  leaves+=("$formula")
-done < <(brew leaves | sort)
+while IFS= read -r formula; do leaves+=("$formula"); done < <(brew leaves | sort)
 
 managed_formulae=()
 if [[ -f "${DOTFILES_DIR}/Brewfile" ]]; then
-  while IFS= read -r formula; do
-    managed_formulae+=("$formula")
-  done < <(sed -n 's/^brew "\([^"]*\)".*/\1/p' "${DOTFILES_DIR}/Brewfile" | sort)
+  while IFS= read -r formula; do managed_formulae+=("$formula"); done < <(sed -n 's/^brew "\([^"]*\)".*/\1/p' "${DOTFILES_DIR}/Brewfile" | sort)
 fi
 
 candidates=()
-
 for formula in "${leaves[@]}"; do
-  if contains "$formula" "${managed_formulae[@]}"; then
-    continue
-  fi
-
+  if contains "$formula" "${managed_formulae[@]}"; then continue; fi
   if [[ "$ALL" -eq 1 ]] || is_runtime_candidate "$formula"; then
     candidates+=("$formula")
   fi
 done
 
-echo "Homebrew Dependency Cleanup"
-if [[ "$APPLY" -eq 1 ]]; then
-  echo "Mode: apply with confirmation"
-else
-  echo "Mode: dry run"
-fi
-
 if [[ "${#candidates[@]}" -eq 0 ]]; then
-  echo
-  echo "No matching Homebrew leaf formulae found."
+  log_success "No unmanaged runtime formulae found."
   exit 0
 fi
 
-print_header "Candidates"
+log_header "Candidates for Removal"
 for formula in "${candidates[@]}"; do
   version="$(brew list --versions "$formula" 2>/dev/null || true)"
-  printf '%-20s %s\n' "$formula" "${version#"$formula "}"
+  printf "${CL_BOLD}%-20s${CL_RESET} ${CL_CYAN}%s${CL_RESET}\n" "$formula" "${version#"$formula "}"
 done
 
-print_header "Review"
+log_header "Reviewing Dependencies"
 for formula in "${candidates[@]}"; do
-  echo
-  echo "$formula"
+  printf "\n${CL_BOLD}Checking: ${CL_CYAN}%s${CL_RESET}\n" "$formula"
 
   dependents="$(brew uses --installed "$formula" 2>/dev/null || true)"
   if [[ -n "$dependents" ]]; then
-    echo "Installed dependents:"
-    echo "$dependents" | sed 's/^/  - /'
-    echo "Skip: another installed formula still references this."
+    printf "  ${CL_YELLOW}${SYM_WARN} Dependent formulae found:${CL_RESET}\n"
+    echo "$dependents" | sed 's/^/    - /'
+    log_info "Skipping: another installed formula still references this."
     continue
   fi
 
   if [[ "$APPLY" -eq 1 ]]; then
     if confirm "Uninstall $formula?"; then
       brew uninstall "$formula"
+      log_success "Uninstalled $formula"
     else
-      echo "Skip: $formula"
+      log_info "Kept $formula"
     fi
   else
-    echo "Would ask before running: brew uninstall $formula"
+    printf "  ${CL_CYAN}${SYM_INFO} Would ask to uninstall: brew uninstall %s${CL_RESET}\n" "$formula"
   fi
 done
 
-print_header "Aftercare"
+log_header "Maintenance"
 if [[ "$APPLY" -eq 1 ]]; then
-  if confirm "Run brew autoremove to remove unused dependencies?"; then
+  if confirm "Run brew autoremove to purge unused dependencies?"; then
     brew autoremove
+    log_success "Purged unused dependencies."
   else
-    echo "Skip: brew autoremove"
+    log_info "Skipped autoremove."
   fi
 else
-  echo "After uninstalling selected formulae, review unused dependencies with:"
-  echo "  brew autoremove --dry-run"
+  log_info "To clean up unused dependencies later, run:"
+  printf "  ${CL_BOLD}brew autoremove --dry-run${CL_RESET}\n"
 fi
 
-echo
-echo "Done."
+printf "\n${CL_BOLD}${CL_GREEN}✨ Cleanup process finished.${CL_RESET}\n"

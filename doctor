@@ -1,56 +1,49 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-required_commands=(
-  git
-  zsh
-  nvim
-  tmux
-)
+# --- Colors & Symbols ---
+CL_RED='\033[0;31m'
+CL_GREEN='\033[0;32m'
+CL_YELLOW='\033[0;33m'
+CL_BLUE='\033[0;34m'
+CL_MAGENTA='\033[0;35m'
+CL_CYAN='\033[0;36m'
+CL_BOLD='\033[1m'
+CL_RESET='\033[0m'
 
-optional_commands=(
-  bat
-  brew
-  curl
-  ddgr
-  delta
-  eza
-  fd
-  fnm
-  rg
-  vim
-  fzf
-  jq
-  lazygit
-  nnn
-  kitty
-  tldr
-  uv
-  zoxide
-)
+SYM_OK="✔"
+SYM_MISS="✖"
+SYM_WARN="⚠"
+SYM_NOTE="ℹ"
+
+# --- Configuration ---
+required_commands=(git zsh nvim tmux)
+optional_commands=(bat brew curl ddgr delta eza fd fnm rg vim fzf jq lazygit nnn kitty tldr uv zoxide)
 
 missing_required=0
 missing_optional=0
 notices=0
 
-print_header() {
-  local title="$1"
-
-  echo
-  echo "$title"
-  printf '%s\n' "----------------------------------------"
-}
+# --- Helper Functions ---
+log_header() { printf "\n${CL_BOLD}${CL_MAGENTA}==> %b${CL_RESET}\n" "$1"; }
 
 print_result() {
   local status="$1"
   local name="$2"
   local detail="${3:-}"
+  local color=""
+  local symbol=""
 
-  if [[ -n "$detail" ]]; then
-    printf '%-6s %-24s %s\n' "$status" "$name" "$detail"
-  else
-    printf '%-6s %s\n' "$status" "$name"
-  fi
+  case "$status" in
+    OK)    color="$CL_GREEN";   symbol="$SYM_OK" ;;
+    MISS)  color="$CL_RED";     symbol="$SYM_MISS" ;;
+    WARN)  color="$CL_YELLOW";  symbol="$SYM_WARN" ;;
+    NOTE)  color="$CL_BLUE";    symbol="$SYM_NOTE" ;;
+    FAIL)  color="$CL_RED";     symbol="$SYM_MISS" ;;
+    *)     color="$CL_RESET";   symbol=" " ;;
+  esac
+
+  printf "${color}${symbol} ${CL_BOLD}%-15s${CL_RESET} ${CL_CYAN}%s${CL_RESET}\n" "$name" "$detail"
 }
 
 check_command() {
@@ -70,57 +63,59 @@ check_command() {
   fi
 }
 
-echo "Dotfiles Doctor"
-print_header "Required tools"
+# --- Execution ---
+printf "${CL_BOLD}${CL_CYAN}🩺 Dotfiles Doctor${CL_RESET}\n"
+
+log_header "Required Tools"
 for command_name in "${required_commands[@]}"; do
   check_command required "$command_name"
 done
 
-print_header "Optional tools"
+log_header "Optional Tools"
 for command_name in "${optional_commands[@]}"; do
   check_command optional "$command_name"
 done
 
-print_header "Setup"
+log_header "Setup & Environment"
 if [[ -L "${HOME}/.zshrc" ]]; then
-  print_result "OK" "~/.zshrc" "symlink"
+  print_result "OK" "~/.zshrc" "linked"
 else
   print_result "NOTE" "~/.zshrc" "not a symlink"
   notices=$((notices + 1))
 fi
 
 if [[ -f "${HOME}/.zshrc-secrets" ]]; then
-  print_result "OK" "~/.zshrc-secrets" "exists"
+  print_result "OK" "secrets" "exists"
 else
-  print_result "NOTE" "~/.zshrc-secrets" "missing"
+  print_result "NOTE" "secrets" "missing (~/.zshrc-secrets)"
   notices=$((notices + 1))
 fi
 
 if [[ -d "${HOME}/.local/share/nvim/lazy/lazy.nvim" ]]; then
   print_result "OK" "lazy.nvim" "installed"
 else
-  print_result "NOTE" "lazy.nvim" "will bootstrap on first nvim start"
+  print_result "NOTE" "lazy.nvim" "will bootstrap on start"
   notices=$((notices + 1))
 fi
 
 if [[ -x "${HOME}/.local/share/nvim/python-provider/bin/python" ]] &&
   "${HOME}/.local/share/nvim/python-provider/bin/python" -c 'import pynvim' >/dev/null 2>&1; then
-  print_result "OK" "nvim python" "pynvim installed"
+  print_result "OK" "nvim-python" "pynvim ready"
 else
-  print_result "NOTE" "nvim python" "run ./install"
+  print_result "NOTE" "nvim-python" "run ./install"
   notices=$((notices + 1))
 fi
 
-print_header "Runtime managers"
+log_header "Runtime Managers"
 if command -v node >/dev/null 2>&1; then
-  print_result "OK" "node" "$(node --version) at $(command -v node)"
+  print_result "OK" "node" "$(node --version)"
 else
-  print_result "NOTE" "node" "install fnm and run: fnm install --lts"
+  print_result "NOTE" "node" "missing (install fnm)"
   notices=$((notices + 1))
 fi
 
 if command -v python3 >/dev/null 2>&1; then
-  print_result "OK" "python3" "$(python3 --version 2>&1) at $(command -v python3)"
+  print_result "OK" "python3" "$(python3 --version 2>&1)"
 else
   print_result "NOTE" "python3" "missing"
   notices=$((notices + 1))
@@ -129,26 +124,26 @@ fi
 if command -v uv >/dev/null 2>&1; then
   print_result "OK" "uv" "$(uv --version)"
 else
-  print_result "NOTE" "uv" "optional Python project manager"
+  print_result "NOTE" "uv" "optional (brew install uv)"
   notices=$((notices + 1))
 fi
 
-print_header "Summary"
+log_header "Summary"
 if [[ "$missing_required" -eq 1 ]]; then
-  print_result "FAIL" "required tools" "missing"
+  print_result "FAIL" "required" "missing critical tools"
   exit 1
 fi
 
 if [[ "$missing_optional" -gt 0 ]]; then
-  print_result "WARN" "optional tools" "${missing_optional} missing"
+  print_result "WARN" "optional" "${missing_optional} missing"
 else
-  print_result "OK" "optional tools" "all available"
+  print_result "OK" "optional" "all available"
 fi
 
 if [[ "$notices" -gt 0 ]]; then
-  print_result "NOTE" "setup notices" "$notices"
+  print_result "NOTE" "setup" "${notices} notices"
 else
   print_result "OK" "setup" "ready"
 fi
 
-print_result "OK" "doctor" "finished"
+echo

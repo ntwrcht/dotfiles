@@ -1,12 +1,41 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# --- Colors & Symbols ---
+CL_RED='\033[0;31m'
+CL_GREEN='\033[0;32m'
+CL_YELLOW='\033[0;33m'
+CL_BLUE='\033[0;34m'
+CL_MAGENTA='\033[0;35m'
+CL_CYAN='\033[0;36m'
+CL_BOLD='\033[1m'
+CL_RESET='\033[0m'
+
+SYM_OK="✔"
+SYM_ERR="✖"
+SYM_WARN="⚠"
+SYM_INFO="ℹ"
+SYM_LINK="🔗"
+SYM_BACKUP="📦"
+SYM_SECRET="🔒"
+SYM_PY="🐍"
+
+# --- Configuration ---
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BACKUP_DIR="${HOME}/.dotfiles-backup/$(date +%Y%m%d-%H%M%S)"
 DRY_RUN=0
 
+# --- Helper Functions ---
+log_info() { printf "${CL_BLUE}${SYM_INFO} %b${CL_RESET}\n" "$1"; }
+log_success() { printf "${CL_GREEN}${SYM_OK} %b${CL_RESET}\n" "$1"; }
+log_warn() { printf "${CL_YELLOW}${SYM_WARN} %b${CL_RESET}\n" "$1"; }
+log_error() { printf "${CL_RED}${SYM_ERR} %b${CL_RESET}\n" "$1"; }
+log_header() { printf "\n${CL_BOLD}${CL_MAGENTA}==> %b${CL_RESET}\n" "$1"; }
+
 usage() {
-  cat <<'USAGE'
+  cat <<USAGE
+${CL_BOLD}Dotfiles Installer${CL_RESET}
+
 Usage: ./install [--dry-run]
 
 Creates symlinks from this repo into your home directory.
@@ -28,29 +57,36 @@ for arg in "$@"; do
       exit 0
       ;;
     *)
-      echo "Unknown option: $arg" >&2
+      log_error "Unknown option: $arg"
       usage
       exit 1
       ;;
   esac
 done
 
+if [[ "$DRY_RUN" -eq 1 ]]; then
+  log_warn "Running in DRY-RUN mode. No changes will be made."
+fi
+
 run() {
   if [[ "$DRY_RUN" -eq 1 ]]; then
-    printf '[dry-run] %q' "$1"
+    printf "${CL_CYAN}[dry-run]${CL_RESET} %q" "$1"
     shift
-    printf ' %q' "$@"
-    printf '\n'
+    [[ $# -gt 0 ]] && printf " %q" "$@"
+    printf "\n"
   else
     "$@"
   fi
 }
 
 ensure_backup_dir() {
-  if [[ "$DRY_RUN" -eq 1 ]]; then
-    echo "[dry-run] mkdir -p ${BACKUP_DIR}"
-  else
-    mkdir -p "$BACKUP_DIR"
+  if [[ ! -d "$BACKUP_DIR" ]]; then
+    if [[ "$DRY_RUN" -eq 1 ]]; then
+      log_info "Would create backup directory: ${CL_BOLD}${BACKUP_DIR}${CL_RESET}"
+    else
+      mkdir -p "$BACKUP_DIR"
+      log_info "Created backup directory: ${CL_BOLD}${BACKUP_DIR}${CL_RESET}"
+    fi
   fi
 }
 
@@ -61,22 +97,22 @@ link_file() {
   target_name="$(basename "$target")"
 
   if [[ ! -e "$source" ]]; then
-    echo "Missing source: $source" >&2
+    log_error "Missing source: $source"
     exit 1
   fi
 
   if [[ -L "$target" && "$(readlink "$target")" == "$source" ]]; then
-    echo "Already linked: $target -> $source"
+    log_success "Already linked: ${CL_CYAN}${target}${CL_RESET} -> ${CL_YELLOW}${source}${CL_RESET}"
     return
   fi
 
   if [[ -e "$target" || -L "$target" ]]; then
     ensure_backup_dir
-    echo "Backing up: $target -> ${BACKUP_DIR}/${target_name}"
+    log_info "${SYM_BACKUP} Backing up: ${CL_BOLD}${target}${CL_RESET}"
     run mv "$target" "${BACKUP_DIR}/${target_name}"
   fi
 
-  echo "Linking: $target -> $source"
+  log_info "${SYM_LINK} Linking: ${CL_CYAN}${target}${CL_RESET} -> ${CL_YELLOW}${source}${CL_RESET}"
   run ln -s "$source" "$target"
 }
 
@@ -84,21 +120,23 @@ ensure_secrets_file() {
   local source="${DOTFILES_DIR}/.zshrc-secrets.example"
   local target="${HOME}/.zshrc-secrets"
 
+  log_header "Secrets Management"
+
   if [[ ! -e "$source" ]]; then
-    echo "Missing source: $source" >&2
+    log_error "Missing source: $source"
     exit 1
   fi
 
   if [[ -e "$target" ]]; then
-    echo "Secrets file exists: $target"
+    log_success "Secrets file exists: ${CL_BOLD}${target}${CL_RESET}"
     run chmod 600 "$target"
     return
   fi
 
-  echo "Creating secrets file: $target"
+  log_info "${SYM_SECRET} Creating secrets file: ${CL_BOLD}${target}${CL_RESET}"
   run cp "$source" "$target"
   run chmod 600 "$target"
-  echo "Edit $target and replace the placeholder values."
+  log_warn "Action Required: Edit ${CL_BOLD}${target}${CL_RESET} and replace placeholder values."
 }
 
 ensure_nvim_python_provider() {
@@ -106,8 +144,10 @@ ensure_nvim_python_provider() {
   local python_bin="${venv_dir}/bin/python"
   local python3_bin=""
 
+  log_header "Neovim Python Provider"
+
   if [[ -x "$python_bin" ]] && "$python_bin" -c 'import pynvim' >/dev/null 2>&1; then
-    echo "Neovim Python provider exists: $python_bin"
+    log_success "Neovim Python provider ready: ${CL_BOLD}${python_bin}${CL_RESET}"
     return
   fi
 
@@ -119,32 +159,35 @@ ensure_nvim_python_provider() {
   done
 
   if [[ -z "$python3_bin" ]]; then
-    echo "Missing python3: install it with Homebrew or your system package manager." >&2
+    log_error "Missing python3: install it via Homebrew or system package manager."
     exit 1
   fi
 
-  echo "Installing Neovim Python provider: $venv_dir"
+  log_info "${SYM_PY} Installing Neovim Python provider: ${CL_BOLD}${venv_dir}${CL_RESET}"
   if [[ "$DRY_RUN" -eq 1 ]]; then
-    echo "[dry-run] $python3_bin -m venv $venv_dir"
-    echo "[dry-run] $python_bin -m pip install --upgrade pip pynvim"
+    log_info "Would run: $python3_bin -m venv $venv_dir"
+    log_info "Would run: $python_bin -m pip install --upgrade pip pynvim"
     return
   fi
 
   "$python3_bin" -m venv "$venv_dir"
   "$python_bin" -m pip install --upgrade pip pynvim
+  log_success "Neovim Python provider installed."
 }
 
+log_header "Installing Dotfiles"
 link_file "${DOTFILES_DIR}/.vimrc" "${HOME}/.vimrc"
 link_file "${DOTFILES_DIR}/.zshrc" "${HOME}/.zshrc"
 link_file "${DOTFILES_DIR}/.config" "${HOME}/.config"
 link_file "${DOTFILES_DIR}/.gitconfig" "${HOME}/.gitconfig"
 link_file "${DOTFILES_DIR}/.tmux.conf" "${HOME}/.tmux.conf"
 link_file "${DOTFILES_DIR}/.tmux.conf.local" "${HOME}/.tmux.conf.local"
+
 ensure_secrets_file
 ensure_nvim_python_provider
 
-echo
-echo "Done."
+printf "\n${CL_BOLD}${CL_GREEN}✨ Installation Complete!${CL_RESET}\n"
 if [[ -d "$BACKUP_DIR" ]]; then
-  echo "Backups: $BACKUP_DIR"
+  log_info "Backups stored in: ${CL_BOLD}${BACKUP_DIR}${CL_RESET}"
 fi
+echo
