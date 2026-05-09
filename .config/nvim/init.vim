@@ -38,16 +38,22 @@ require("lazy").setup({
   { "nvim-treesitter/nvim-treesitter", build = ":TSUpdate" },
   { "lewis6991/gitsigns.nvim" },
   { "lukas-reineke/indent-blankline.nvim", main = "ibl", opts = {} },
+  { "echasnovski/mini.icons", version = false },
   {
     "folke/which-key.nvim",
     lazy = false,
+    dependencies = { "echasnovski/mini.icons" },
     init = function()
       vim.o.timeout = true
       vim.o.timeoutlen = 300
     end,
     config = function()
       local wk = require("which-key")
-      wk.setup()
+      wk.setup({
+        icons = {
+          rules = false, -- use rules from mini.icons
+        },
+      })
       wk.add({
         { "<leader>f", desc = "Find Files" },
         { "<leader>r", desc = "Live Grep" },
