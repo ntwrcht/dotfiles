@@ -28,5 +28,6 @@
   "vim-prettier": { "branch": "master", "commit": "7dbdbb12c50a9f4ba72390cce2846248e4368fd0" },
   "vim-tmux-navigator": { "branch": "master", "commit": "e41c431a0c7b7388ae7ba341f01a0d217eb3a432" },
   "vim-visual-multi": { "branch": "master", "commit": "a6975e7c1ee157615bbc80fc25e4392f71c344d4" },
-  "vim-vue-plugin": { "branch": "master", "commit": "04c3fb20ed5096a983f71af204afba07cdfa6d6f" }
+  "vim-vue-plugin": { "branch": "master", "commit": "04c3fb20ed5096a983f71af204afba07cdfa6d6f" },
+  "which-key.nvim": { "branch": "main", "commit": "3aab2147e74890957785941f0c1ad87d0a44c15a" }
 }
