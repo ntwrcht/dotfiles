@@ -34,6 +34,8 @@ make doctor    # check required and optional tools
 make deps      # install Homebrew dependencies from Brewfile
 ```
 
+The installer also creates a dedicated Neovim Python provider virtualenv at `~/.local/share/nvim/python-provider`.
+
 ## Dependencies
 
 Install Homebrew packages:

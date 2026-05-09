@@ -101,6 +101,14 @@ else
   notices=$((notices + 1))
 fi
 
+if [[ -x "${HOME}/.local/share/nvim/python-provider/bin/python" ]] &&
+  "${HOME}/.local/share/nvim/python-provider/bin/python" -c 'import pynvim' >/dev/null 2>&1; then
+  print_result "OK" "nvim python" "pynvim installed"
+else
+  print_result "NOTE" "nvim python" "run ./install"
+  notices=$((notices + 1))
+fi
+
 print_header "Summary"
 if [[ "$missing_required" -eq 1 ]]; then
   print_result "FAIL" "required tools" "missing"

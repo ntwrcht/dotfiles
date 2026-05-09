@@ -101,6 +101,26 @@ ensure_secrets_file() {
   echo "Edit $target and replace the placeholder values."
 }
 
+ensure_nvim_python_provider() {
+  local venv_dir="${HOME}/.local/share/nvim/python-provider"
+  local python_bin="${venv_dir}/bin/python"
+
+  if [[ -x "$python_bin" ]] && "$python_bin" -c 'import pynvim' >/dev/null 2>&1; then
+    echo "Neovim Python provider exists: $python_bin"
+    return
+  fi
+
+  echo "Installing Neovim Python provider: $venv_dir"
+  if [[ "$DRY_RUN" -eq 1 ]]; then
+    echo "[dry-run] /opt/homebrew/bin/python3 -m venv $venv_dir"
+    echo "[dry-run] $python_bin -m pip install --upgrade pip pynvim"
+    return
+  fi
+
+  /opt/homebrew/bin/python3 -m venv "$venv_dir"
+  "$python_bin" -m pip install --upgrade pip pynvim
+}
+
 link_file "${DOTFILES_DIR}/.vimrc" "${HOME}/.vimrc"
 link_file "${DOTFILES_DIR}/.zshrc" "${HOME}/.zshrc"
 link_file "${DOTFILES_DIR}/.config" "${HOME}/.config"
@@ -108,6 +128,7 @@ link_file "${DOTFILES_DIR}/.gitconfig" "${HOME}/.gitconfig"
 link_file "${DOTFILES_DIR}/.tmux.conf" "${HOME}/.tmux.conf"
 link_file "${DOTFILES_DIR}/.tmux.conf.local" "${HOME}/.tmux.conf.local"
 ensure_secrets_file
+ensure_nvim_python_provider
 
 echo
 echo "Done."

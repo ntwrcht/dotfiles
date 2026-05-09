@@ -3,6 +3,9 @@
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let mapleader = ","
 let maplocalleader = ","
+let g:loaded_perl_provider = 0
+let g:loaded_ruby_provider = 0
+let g:python3_host_prog = expand('~/.local/share/nvim/python-provider/bin/python')
 
 lua << EOF
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
@@ -50,6 +53,7 @@ require("lazy").setup({
 }, {
   install = { colorscheme = { "xcode_dark", "habamax" } },
   checker = { enabled = false },
+  rocks = { enabled = false },
 })
 EOF
 
@@ -199,11 +203,6 @@ nnoremap <silent> <C-j> :TmuxNavigateDown<cr>
 nnoremap <silent> <C-k> :TmuxNavigateUp<cr>
 nnoremap <silent> <C-l> :TmuxNavigateRight<cr>
 nnoremap <silent> <C-\> :TmuxNavigatePrevious<cr>
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Python
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-let g:python3_host_prog = '/opt/homebrew/bin/python3'
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => VIM AI
