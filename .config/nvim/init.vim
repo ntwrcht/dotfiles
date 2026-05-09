@@ -14,6 +14,10 @@ let g:loaded_ruby_provider = 0
 let g:python3_host_prog = expand('~/.local/share/nvim/python-provider/bin/python')
 
 lua << EOF
+-- Ensure leader is set in Lua context too
+vim.g.mapleader = ","
+vim.g.maplocalleader = ","
+
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
   local lazyrepo = "https://github.com/folke/lazy.nvim.git"
@@ -44,7 +48,26 @@ require("lazy").setup({
   { "lewis6991/gitsigns.nvim" },
   { "lukas-reineke/indent-blankline.nvim", main = "ibl", opts = {} },
   { "echasnovski/mini.icons", version = false },
-  { "folke/which-key.nvim", lazy = false },
+  {
+    "folke/which-key.nvim",
+    lazy = false,
+    dependencies = { "echasnovski/mini.icons" },
+    config = function()
+      local wk = require("which-key")
+      wk.setup({
+        icons = { rules = false },
+      })
+      wk.add({
+        { "<leader>f", desc = "Find Files" },
+        { "<leader>r", desc = "Live Grep" },
+        { "<leader>b", desc = "Buffers" },
+        { "<leader>g", desc = "Lazygit" },
+        { "<leader>ll", desc = "Lazy Log" },
+        { "<leader>ac", desc = "CoC Action" },
+        { "<leader>qf", desc = "CoC Fix" },
+      })
+    end
+  },
 
   -- Search
   { 
@@ -148,23 +171,6 @@ if telescope_status_ok then
   vim.keymap.set('n', '<leader>r', live_grep_with_hidden, {})
   vim.keymap.set('n', '<leader>b', builtin.buffers, {})
   vim.keymap.set('n', '<leader>sh', builtin.help_tags, {})
-end
-
--- Which-Key Configuration (at the end to see all mappings)
-local wk_status_ok, wk = pcall(require, "which-key")
-if wk_status_ok then
-  wk.setup({
-    icons = {
-      rules = false, -- use rules from mini.icons
-    },
-  })
-  wk.add({
-    { "<leader>f", desc = "Find Files" },
-    { "<leader>r", desc = "Live Grep" },
-    { "<leader>b", desc = "Buffers" },
-    { "<leader>g", desc = "Lazygit" },
-    { "<leader>ll", desc = "Lazy Log" },
-  })
 end
 EOF
 
@@ -373,8 +379,8 @@ nmap <silent> gd <Plug>(coc-definition)
 nmap <silent> gy <Plug>(coc-type-definition)
 nmap <silent> gi <Plug>(coc-implementation)
 nmap <silent> gr <Plug>(coc-references)
-nmap <leader> ac <Plug>(coc-codeaction)
-nmap <leader> qf <Plug>(coc-fix-current)
+nmap <leader>ac <Plug>(coc-codeaction)
+nmap <leader>qf <Plug>(coc-fix-current)
 
 inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm(): "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
 
