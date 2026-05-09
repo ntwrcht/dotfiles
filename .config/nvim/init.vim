@@ -1,8 +1,9 @@
+let mapleader = ","
+let maplocalleader = ","
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => lazy.nvim
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-let mapleader = ","
-let maplocalleader = ","
 let g:loaded_perl_provider = 0
 let g:loaded_ruby_provider = 0
 let g:python3_host_prog = expand('~/.local/share/nvim/python-provider/bin/python')
