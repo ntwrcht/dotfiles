@@ -155,6 +155,7 @@
 /.vagrant.d
 # /.vim*
 /.vim/.netrwhist
+/.vim/autoload/plug.vim
 /.vim/autoload/plug.vim.old
 /.viminfo
 /.vim/bundle/

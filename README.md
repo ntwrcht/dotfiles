@@ -52,7 +52,13 @@ Useful tools included in the `Brewfile`:
 
 ## Vim Plugins
 
-Follow is [link](https://github.com/junegunn/vim-plug) for pre-installation [vim-plug](https://github.com/junegunn/vim-plug) module
+The installer bootstraps [vim-plug](https://github.com/junegunn/vim-plug) when it is missing.
+
+After installation, open Vim and run:
+
+```vim
+:PlugInstall
+```
 
 ## Alacritty
 

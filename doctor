@@ -10,6 +10,7 @@ required_commands=(
 
 optional_commands=(
   brew
+  curl
   nvim
   rg
   fzf
@@ -72,6 +73,12 @@ if [[ -f "${HOME}/.zshrc-secrets" ]]; then
   echo "ok      ~/.zshrc-secrets exists"
 else
   echo "notice  ~/.zshrc-secrets is missing"
+fi
+
+if [[ -f "${HOME}/.vim/autoload/plug.vim" ]]; then
+  echo "ok      vim-plug is installed"
+else
+  echo "notice  vim-plug is missing"
 fi
 
 if [[ "$missing_required" -eq 1 ]]; then
