@@ -3,6 +3,17 @@
 	email = s.worachote@hotmail.com
 [core]
 	excludesfile = ~/.config/git/ignore
+	pager = delta
+[interactive]
+	diffFilter = delta --color-only
+[delta]
+	navigate = true
+	side-by-side = true
+	line-numbers = true
+[diff]
+	colorMoved = default
+[merge]
+	conflictstyle = diff3
 [difftool "sourcetree"]
 	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
 	path = 
