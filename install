@@ -91,8 +91,8 @@ link_file() {
   target_name="$(basename "$target")"
 
   if [[ ! -e "$source" ]]; then
-    log_error "Missing source: $source"
-    exit 1
+    log_warn "Skipping (source not found): $source"
+    return
   fi
 
   if [[ -L "$target" && "$(readlink "$target")" == "$source" ]]; then
@@ -104,6 +104,13 @@ link_file() {
     ensure_backup_dir
     log_info "${SYM_BACKUP} Backing up: ${CL_BOLD}${target}${CL_RESET}"
     run mv "$target" "${BACKUP_DIR}/${target_name}"
+  fi
+
+  local parent_dir
+  parent_dir="$(dirname "$target")"
+  if [[ ! -d "$parent_dir" ]]; then
+    log_info "Creating parent directory: ${CL_BOLD}${parent_dir}${CL_RESET}"
+    run mkdir -p "$parent_dir"
   fi
 
   log_info "${SYM_LINK} Linking: ${CL_CYAN}${target}${CL_RESET} -> ${CL_YELLOW}${source}${CL_RESET}"

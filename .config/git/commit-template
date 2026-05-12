@@ -1,0 +1,12 @@
+# <type>(<scope>): <description>
+#
+# Types : feat fix refactor perf style test docs chore ci build revert
+# Scope : module, component, or file affected (lowercase, concise)
+# Desc  : imperative mood, lowercase, no period, max 72 chars
+#
+# Body — explain WHY, not what (optional):
+#
+#
+# Footer — breaking changes, issue refs (optional):
+# BREAKING CHANGE: <description>
+# Closes #<issue>

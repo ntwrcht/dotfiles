@@ -1,5 +1,7 @@
 # Track only selected XDG config directories.
 .config/*
+!.config/git/
+!.config/git/**
 !.config/kitty/
 !.config/kitty/**
 !.config/nvim/
