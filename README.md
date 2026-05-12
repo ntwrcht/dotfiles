@@ -26,18 +26,12 @@ When you run the installer, it connects each config file here to the right place
 
 ## before you start
 
-Make sure you have these two things installed:
+One thing needs to be installed manually — everything else is handled automatically after that.
 
-**1. Homebrew** — the package manager for macOS
+**Homebrew** — the package manager for macOS *(requires your password)*
 
 ```bash
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-```
-
-**2. Git** — to download this repo *(comes with macOS, but Homebrew's version is newer)*
-
-```bash
-brew install git
 ```
 
 ---
@@ -50,26 +44,30 @@ brew install git
 git clone git@github.com:Canvas-xxx/dotfiles.git ~/.dotfiles
 ```
 
-**Step 2 — install all tools**
+**Step 2 — install all tools** `· automated ·`
 
 ```bash
 cd ~/.dotfiles
 make deps
 ```
 
-This reads the [`Brewfile`](./Brewfile) and installs everything at once — editor, terminal, shell tools, fonts.
+Reads the [`Brewfile`](./Brewfile) and installs everything at once — editor, terminal, shell tools, fonts, and Git.
 
-**Step 3 — apply the configs**
+**Step 3 — apply the configs** `· automated ·`
 
 ```bash
 make install
 ```
 
-This will:
-- link all config files to the right places on your machine
-- install [Oh My Zsh](https://ohmyz.sh) — a framework that powers the shell prompt and plugins
-- install the [Powerlevel10k](https://github.com/romkatv/powerlevel10k) theme and Zsh plugins
-- set up the Neovim Python provider
+Handles everything automatically:
+
+| what | manual? |
+| :--- | :---: |
+| link all config files to the right places | ✦ auto |
+| install [Oh My Zsh](https://ohmyz.sh) | ✦ auto |
+| install [Powerlevel10k](https://github.com/romkatv/powerlevel10k) theme | ✦ auto |
+| install Zsh plugins (syntax highlighting, autosuggestions) | ✦ auto |
+| set up Neovim Python provider | ✦ auto |
 
 Open a new terminal window when it finishes and everything should be active.
 
