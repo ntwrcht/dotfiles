@@ -65,7 +65,13 @@ This reads the [`Brewfile`](./Brewfile) and installs everything at once — edit
 make install
 ```
 
-That's it. Open a new terminal window and everything should be active.
+This will:
+- link all config files to the right places on your machine
+- install [Oh My Zsh](https://ohmyz.sh) — a framework that powers the shell prompt and plugins
+- install the [Powerlevel10k](https://github.com/romkatv/powerlevel10k) theme and Zsh plugins
+- set up the Neovim Python provider
+
+Open a new terminal window when it finishes and everything should be active.
 
 > **Not sure what will happen?** Run `make dry-run` first — it shows exactly what the installer would do without changing anything.
 
