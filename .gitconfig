@@ -1,5 +1,5 @@
 [user]
-	name = Canvas-xxx
+	name = Worachote Suwanyothin
 	email = s.worachote@hotmail.com
 [core]
 	excludesfile = ~/.config/git/ignore
@@ -16,7 +16,7 @@
 	conflictstyle = diff3
 [difftool "sourcetree"]
 	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
-	path = 
+	path =
 [mergetool "sourcetree"]
 	cmd = /Applications/Sourcetree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
 	trustExitCode = true
