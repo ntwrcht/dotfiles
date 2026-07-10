@@ -24,6 +24,7 @@ alias gc="git commit -v"
 alias gp="git pull"
 alias gpush="git push"
 alias gf='git fetch --all --prune'
+alias gfp='gf && gp'
 alias gb='git branch -a'
 alias gbm='git branch --merged'
 alias gbnm='git branch --no-merged'
