@@ -12,8 +12,8 @@ Make the dotfiles repo easier to change, harder to break, and visually coherent 
 | Signal | Measured by |
 |---|---|
 | Adding a managed config is a one-line change | ✅ **Done** — verified: one `links.conf` line propagates to install, uninstall, and doctor |
-| A broken change is caught before it reaches a machine | CI fails on shellcheck error or a dry-run install failure |
-| Every surface shares one palette | kitty, tmux, nvim, fzf, delta, bat all render Catppuccin Mocha |
+| A broken change is caught before it reaches a machine | ✅ **Done** — CI green in 22s: shellcheck `--severity=warning` (a higher bar than planned), `zsh -n`, dry-run install on macOS, and a README drift check |
+| Every surface shares one palette | ✅ **Done** — kitty, tmux, nvim, fzf, delta and bat all on Catppuccin Mocha |
 | The repo folder is its own size | ✅ **Done** — 851 MB → **3.8 MB** locally, beating the ~30 MB target. Fresh clones stay at 97 MB until the backup tag is deleted. |
 
 ## Non-Goals
@@ -197,3 +197,36 @@ Everything lands in git on a branch, so `git revert` covers all code changes. Th
 ## Next Action
 
 Implement WS0 and WS1 first, gated on the dry-run diff being empty. Then WS2, WS3 in either order, then WS4 and WS5.
+
+
+---
+
+## Outcome — 2026-09-17
+
+All five workstreams landed on `chore/manifest-and-cleanup`. CI is green.
+
+| Workstream | Status |
+|---|---|
+| WS0 Cleanup | ✅ 749 MB fossil to Trash; `.gitignore` 207 → 65 lines |
+| WS1 Manifest | ✅ `links.conf` drives all three scripts; gate passed byte-identical |
+| WS2 Theming | ✅ One palette across six surfaces; kitty font bug fixed |
+| WS3 CLI polish | ✅ `NO_COLOR`, install summary, font check; SC2059 cleared |
+| WS4 README | ⚠️ Generated table, Mermaid diagram, honest badges — **terminal recording not done** |
+| WS5 CI | ✅ Three jobs, green |
+| D9 History | ✅ Rewritten and force-pushed; local repo 3.8 MB |
+
+### Beyond the original plan
+
+The research pass found defects the design had not anticipated, all fixed:
+
+- **nvim-treesitter was installed and doing nothing.** Pinned to the incompatible `main` branch while the config called a `master`-only API; a `pcall` swallowed the error. 0 parsers were installed. Now pinned to `master`, 11 parsers built, highlighter verified active.
+- **`set undofile` was cancelled by `set noundofile`** six lines later — persistent undo had been silently off.
+- **The zsh tmux autostart never attached.** `tmux` with no arguments means `new-session`, so every terminal created another session and the `|| tmux new` fallback was unreachable.
+- **`coc-python` has been archived since 2020** — swapped for `coc-pyright`.
+- **D6 was reversed.** The vendored oh-my-tmux copy was 3.5 years stale and used at roughly 10%; replaced with an owned 87-line config.
+
+### Outstanding
+
+1. **Fresh clones still download 97 MB.** The `pre-filter-repo-backup` tag on origin pins the old objects. Deleting it is the last step and is irreversible — the local copy of that tag was itself rewritten, so origin holds the only pre-rewrite history.
+2. **No terminal recording in the README** (WS4 step 3). Recording a real `make install` session needs an interactive terminal.
+3. **The branch is not merged.** `chore/manifest-and-cleanup` is ahead of `master` by nine commits.
