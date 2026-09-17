@@ -135,11 +135,6 @@ require("lazy").setup({
   { "aklt/plantuml-syntax" },
   { "tyru/open-browser.vim" },
   { "weirongxu/plantuml-previewer.vim" },
-  { "pangloss/vim-javascript" },
-  { "leafgarland/typescript-vim" },
-  { "maxmellon/vim-jsx-pretty" },
-  { "jparise/vim-graphql" },
-  { "peitalin/vim-jsx-typescript" },
   { "prettier/vim-prettier", build = "yarn install --frozen-lockfile --production" },
   { "darrikonn/vim-gofmt", build = ":GoUpdateBinaries" },
   { "leafOfTree/vim-vue-plugin" },
@@ -154,7 +149,7 @@ require("lazy").setup({
 local status_ok, ts = pcall(require, "nvim-treesitter.configs")
 if status_ok then
   ts.setup {
-    ensure_installed = { "lua", "vim", "vimdoc", "javascript", "typescript", "go", "python", "json", "yaml", "markdown", "bash" },
+    ensure_installed = { "lua", "vim", "vimdoc", "javascript", "typescript", "tsx", "go", "python", "json", "yaml", "markdown", "bash", "css", "html", "graphql" },
     highlight = { enable = true },
   }
 end
@@ -399,9 +394,6 @@ endfunction
 " Use K to show documentation in preview window.
 nnoremap <silent> K :call <SID>show_documentation()<CR>
 
-inoremap <silent><expr> <TAB> pumvisible() ? "\<C-n>" : <SID>check_back_space() ? "\<TAB>" : coc#refresh()
-inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
-
 " Use `[g` and `]g` to navigate diagnostics
 nmap <silent> [g <Plug>(coc-diagnostic-prev)
 nmap <silent> ]g <Plug>(coc-diagnostic-next)
@@ -413,8 +405,6 @@ nmap <silent> gi <Plug>(coc-implementation)
 nmap <silent> gr <Plug>(coc-references)
 nmap <leader>ac <Plug>(coc-codeaction)
 nmap <leader>qf <Plug>(coc-fix-current)
-
-inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm(): "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
 
 nnoremap <nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-f>"
 nnoremap <nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-b>"
