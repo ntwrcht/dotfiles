@@ -44,7 +44,9 @@ end
 require("lazy").setup({
   -- Core & UI
   { "nvim-lualine/lualine.nvim", dependencies = { "nvim-tree/nvim-web-devicons" } },
-  { "nvim-treesitter/nvim-treesitter", build = ":TSUpdate" },
+  -- Pinned to `master`: the `main` branch is the incompatible rewrite and does
+  -- not provide `nvim-treesitter.configs`, which the setup call below uses.
+  { "nvim-treesitter/nvim-treesitter", build = ":TSUpdate", branch = "master" },
   { "lewis6991/gitsigns.nvim" },
   { "lukas-reineke/indent-blankline.nvim", main = "ibl", opts = {} },
   { "echasnovski/mini.icons", version = false },
@@ -215,10 +217,8 @@ set undolevels=100
 set undoreload=1000
 set nobackup
 set nowritebackup
-set noundofile
 set nowrap
 set noswapfile
-set nocursorline
 set shortmess+=c
 
 " interface
@@ -366,7 +366,7 @@ set shortmess+=c
 let g:coc_global_extensions = [
             \'coc-tsserver',
             \'coc-clangd',
-            \'coc-python',
+            \'coc-pyright',
             \'coc-go',
             \'coc-emmet',
             \'coc-html',
