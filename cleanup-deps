@@ -15,7 +15,6 @@ SYM_OK="✔"
 SYM_WARN="⚠"
 SYM_INFO="ℹ"
 SYM_CLEAN="🧹"
-SYM_BREW="🍺"
 
 # --- Configuration ---
 APPLY=0

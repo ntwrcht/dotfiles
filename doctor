@@ -4,6 +4,8 @@ set -euo pipefail
 # --- Colors & Symbols ---
 # shellcheck source=lib/colors.sh
 source "$(dirname "${BASH_SOURCE[0]}")/lib/colors.sh"
+# shellcheck source=lib/links.sh
+source "$(dirname "${BASH_SOURCE[0]}")/lib/links.sh"
 
 SYM_OK="✔"
 SYM_MISS="✖"
@@ -11,6 +13,7 @@ SYM_WARN="⚠"
 SYM_NOTE="ℹ"
 
 # --- Configuration ---
+DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 required_commands=(git zsh nvim tmux)
 optional_commands=(bat brew curl ddgr delta eza fd fnm rg vim fzf jq lazygit nnn kitty tldr uv zoxide)
 
@@ -19,7 +22,7 @@ missing_optional=0
 notices=0
 
 # --- Helper Functions ---
-log_header() { printf "\n${CL_BOLD}${CL_MAGENTA}==> %b${CL_RESET}\n" "$1"; }
+log_header() { printf '\n%s%s==> %s%s\n' "$CL_BOLD" "$CL_MAGENTA" "$1" "$CL_RESET"; }
 
 print_result() {
   local status="$1"
@@ -37,7 +40,7 @@ print_result() {
     *)     color="$CL_RESET";   symbol=" " ;;
   esac
 
-  printf "${color}${symbol} ${CL_BOLD}%-15s${CL_RESET} ${CL_CYAN}%s${CL_RESET}\n" "$name" "$detail"
+  printf '%s%s %s%-18s%s %s%s%s\n' "$color" "$symbol" "$CL_BOLD" "$name" "$CL_RESET" "$CL_CYAN" "$detail" "$CL_RESET"
 }
 
 check_command() {
@@ -57,8 +60,59 @@ check_command() {
   fi
 }
 
+# check_kitty_font
+# Verifies the font_family named in kitty.conf actually resolves on this
+# machine. kitty falls back silently when it does not, which is exactly how
+# this repo shipped a config asking for an uninstalled font for years.
+check_kitty_font() {
+  local conf="${DOTFILES_DIR}/.config/kitty/kitty.conf"
+  [[ -f "$conf" ]] || return 0
+
+  local family
+  family="$(awk '/^font_family[[:space:]]/ { $1=""; sub(/^[[:space:]]+/,""); print; exit }' "$conf")"
+  [[ -n "$family" ]] || return 0
+
+  local needle
+  needle="$(printf '%s' "$family" | tr -d '[:space:]' | tr '[:upper:]' '[:lower:]')"
+
+  if ls ~/Library/Fonts /Library/Fonts /System/Library/Fonts 2>/dev/null \
+      | tr -d ' ' | tr '[:upper:]' '[:lower:]' \
+      | grep -q "^${needle}[-.]"; then
+    print_result "OK" "kitty font" "$family"
+  else
+    print_result "NOTE" "kitty font" "$family not installed — kitty falls back"
+    notices=$((notices + 1))
+  fi
+}
+
+# check_link <source> <target>
+# Reports OK only when target is a symlink that actually resolves to source.
+check_link() {
+  local source="$1"
+  local target="$2"
+  local name
+  name="$(display_path "$target")"
+
+  if [[ ! -L "$target" ]]; then
+    if [[ -e "$target" ]]; then
+      print_result "NOTE" "$name" "real file, not linked — run ./install"
+    else
+      print_result "NOTE" "$name" "not linked — run ./install"
+    fi
+    notices=$((notices + 1))
+    return
+  fi
+
+  if [[ "$(readlink "$target")" == "$source" ]]; then
+    print_result "OK" "$name" "linked"
+  else
+    print_result "NOTE" "$name" "links elsewhere: $(readlink "$target")"
+    notices=$((notices + 1))
+  fi
+}
+
 # --- Execution ---
-printf "${CL_BOLD}${CL_CYAN}🩺 Dotfiles Doctor${CL_RESET}\n"
+printf '%s%s🩺 Dotfiles Doctor%s\n' "$CL_BOLD" "$CL_CYAN" "$CL_RESET"
 
 log_header "Required Tools"
 for command_name in "${required_commands[@]}"; do
@@ -71,22 +125,8 @@ for command_name in "${optional_commands[@]}"; do
 done
 
 log_header "Setup & Environment"
-if [[ -L "${HOME}/.zshrc" ]]; then
-  print_result "OK" "~/.zshrc" "linked"
-else
-  print_result "NOTE" "~/.zshrc" "not a symlink"
-  notices=$((notices + 1))
-fi
-
-for config_dir in nvim kitty git; do
-  target="${HOME}/.config/${config_dir}"
-  if [[ -L "$target" ]]; then
-    print_result "OK" "~/.config/${config_dir}" "linked"
-  else
-    print_result "NOTE" "~/.config/${config_dir}" "not linked — run ./install"
-    notices=$((notices + 1))
-  fi
-done
+for_each_link check_link
+check_kitty_font
 
 if [[ -d "${HOME}/.oh-my-zsh" ]]; then
   print_result "OK" "oh-my-zsh" "installed"

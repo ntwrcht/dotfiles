@@ -1,4 +1,11 @@
-# Track only selected XDG config directories.
+# ─────────────────────────────────────────────────────────────
+# Dotfiles repo .gitignore
+#
+# This repo is a symlink farm, NOT a home directory. Only rules
+# that can actually match a path inside this repo belong here.
+# ─────────────────────────────────────────────────────────────
+
+# --- XDG config: track only the directories we manage ---
 .config/*
 !.config/git/
 !.config/git/**
@@ -6,192 +13,43 @@
 !.config/kitty/**
 !.config/nvim/
 !.config/nvim/**
-/nvim.log
 
-# non-dot files
-# /[^.]*
-!/bin
-
-# Don't include files with sensitive data.
+# --- Secrets: never commit ---
 /.env
 /.env.*
 /.zshrc-secrets
 /.zshrc.local
 /*token*
 /*credentials*
-/.config/openai.token
-/.config/gcloud/
-/.config/.jira/
-/.config/stripe/config.toml
-/.config/*credentials*
 /.config/**/*token*
 /.config/**/*credentials*
 
-# iJunk
-.DS_Store
-.MacOSX
-.Trash
-
-# Node stuff
-/.v8flags.*
-
-# ZSH junk
-/.zcompdump*
-/.zsh-update
-
-# Python virtual envs
-/.virtualenvs
-
-# Ruby virtual envs
-/.rvm
-
-# History files
-/.*history
-
-# Dotfiles
-/*Drobo*
-/.*-dropbox-token
-/.ackrc
-/.adobe
-/.alvzfmtrc
-/.android
-/.ansible/
-/.ansible_galaxy
-/.ansible_roles/
-/.appcfg_cookies
-/.appcfg_nag
-/.ascii.io
-/.atom/
-/.autoenv
-/.autoenv_authorized
-/.autoenv_authorized.tmp
-/.aws/
-/.babel.json
-/.belastingdienst.nl
-/.bi_li3
-/.bower
-/.bup
-/.bzr.log
-/.cache
-/.cargo
-/.cassandra
-/.CFUserTextEncoding
-/.chef
-# /.config
-/.config/configstore/update-notifier-npm.json
+# --- Editor state (generated, machine-local) ---
 /.config/nvim/undodir
 /.config/nvim/plugged
 /.config/nvim/.netrwhist
-/.cookiecutters
-/.cups
-/.dbshell
-/.devpi
-/.direnvrc
-/.docker/
-/.dropbox
-/.dropbox-master
-/.dts/
-/.dvdcss
-/.eaglerc
-/.emacs.d
-/.flow-typed/
-/.fontconfig
-/.ftcurlish.json
-/.gem
-/.gh-credentials
-/.gist
-/.gist-vim
-/.gitk
-/.gnupg
-/.grc
-/.heroku
-/.httpie
-/.ipython
-/.irssi
-/.iterm2
-/.js
-/.jupyter/
-/.keybase-installer
-/.lein
-/.lesshst
-# /.local
-/.m2
-/.matplotlib
-/.mitmproxy
-/.mongorc.js
-/.msgsrc
-/.my.cnf
-/.netrc
-/.ngrok2/
-/.njxnqxgn
-/.node-gyp/
-/.npm
-/.nvm
-/.npmrc
-/.oh-my-zsh
-/.parallel
-/.pip
-/.pip-accel
-/.pip-tools
-/.pm2/
-/.pre-commit/
-/.profile
-/.pyenv/
-/.pylint.d
-/.pypirc
-/.python-eggs
-/.pythonhist
-/.pythonrc.py
-/.pythonz
-/.resty
-/.ri
-/.rnd
-/.s3cfg
-/.srl
-/.ssh
-/.subversion
-# /.tmux.conf
-/.tox
-/.tsd-cache/
-/.ttytterkey
-/.vagrant.d
-# /.vim*
+/nvim.log
 /.vim/.netrwhist
-/.vim/autoload/plug.vim
-/.vim/autoload/plug.vim.old
 /.vim/colors/
-/.viminfo
+/.vim/autoload/plug.vim*
 /.vim/bundle/
 /.vim/plugged/
 /.vim/view/
 /.vim/pack/
-# /.vimrc
-/.vscode/
-/.wget-hsts
-/.Xauthority
-/.XcodeDefaultPerspective.mode1v3
-/.yarn*
-/.yesgraph-*
-# /.z*
-/.kube
-/.dlv
-
-# Directories
-Projects
-
-# Vim generated documentation
+/.viminfo
 /doc/tags
 
-# Powerline-specific cruft that isn't ignored in their own plugin
-Powerline_*.cache
+# --- Shell state ---
+/.zcompdump*
+/.zsh-update
+/.*history
 
-# Postgres stuff
-/.pg*
+# --- macOS ---
+.DS_Store
+.MacOSX
+.Trash
 
-# SimpleContacts
-/bin/*-db
-
-# AI coding agents (generated state, local config, credentials)
+# --- AI coding agents (generated state, local config, credentials) ---
 # To track a specific file, add a negation below, e.g.:
 #   !/.claude/settings.json
 /.claude/

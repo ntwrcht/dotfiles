@@ -4,8 +4,7 @@
 
 **A minimal, opinionated macOS development environment — clone, run, done.**
 
-[![Build Status](https://img.shields.io/badge/build-passing-brightgreen?style=flat-square)](https://github.com/ntwrcht/dotfiles/actions)
-[![Release](https://img.shields.io/badge/release-v1.0.0-blue?style=flat-square)](https://github.com/ntwrcht/dotfiles/releases)
+[![CI](https://github.com/ntwrcht/dotfiles/actions/workflows/ci.yml/badge.svg)](https://github.com/ntwrcht/dotfiles/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square)](#license)
 [![macOS](https://img.shields.io/badge/macOS-000000?style=flat-square&logo=apple&logoColor=white)](https://www.apple.com/macos/)
 [![Zsh](https://img.shields.io/badge/zsh-F15A24?style=flat-square&logo=gnu-bash&logoColor=white)](https://www.zsh.org/)
@@ -54,19 +53,51 @@ The result: a new machine goes from factory state to a fully configured developm
 
 The system follows the classic **symlink farm** pattern: configuration files live in this repository, and the installer links them into their expected locations under `$HOME`. Editing a file here immediately affects the live config — no copy step, no drift.
 
+```mermaid
+flowchart LR
+    subgraph repo["~/.dotfiles (this repo)"]
+        M["links.conf<br/><i>single source of truth</i>"]
+        C["configs<br/>.zshrc · nvim · kitty · git · tmux"]
+    end
+
+    subgraph scripts["Makefile entry points"]
+        I["install"]
+        D["doctor"]
+        U["uninstall"]
+    end
+
+    subgraph home["$HOME"]
+        T["~/.zshrc<br/>~/.config/nvim<br/>~/.tmux.conf<br/>..."]
+    end
+
+    M --> I & D & U
+    C -.->|symlinked| T
+    I -->|creates links| T
+    D -->|verifies links| T
+    U -->|removes links| T
+    I -->|backs up first| B["~/.dotfiles-backup/&lt;timestamp&gt;"]
 ```
-~/.dotfiles
-├── install              # Symlinks configs, installs Oh My Zsh, themes, plugins
-├── uninstall            # Removes all managed symlinks
-├── doctor               # Diagnoses missing tools and broken links
-├── cleanup-deps         # Finds orphaned Homebrew packages
-├── Makefile             # Single entry point for every operation
-├── Brewfile             # Declarative list of all Homebrew dependencies
-├── lib/                 # Shared shell helpers (colors, logging)
-├── zsh/                 # Modular Zsh configuration
-├── .config/             # Neovim, Kitty, and Git configs (linked as directories)
-└── .zshrc, .tmux.conf, .gitconfig, ...   # Individual dotfiles (linked per file)
-```
+
+**`links.conf` is the single source of truth.** `install`, `uninstall`, and `doctor` all read it, so adding a managed config is a one-line change rather than three edits that can drift apart.
+
+### Managed links
+
+<!-- BEGIN LINKS -->
+
+| Source in repo | Linked to |
+| :--- | :--- |
+| `.vimrc` | `~/.vimrc` |
+| `.zshrc` | `~/.zshrc` |
+| `.config/nvim` | `~/.config/nvim` |
+| `.config/kitty` | `~/.config/kitty` |
+| `.config/git` | `~/.config/git` |
+| `.gitconfig` | `~/.gitconfig` |
+| `.tmux.conf` | `~/.tmux.conf` |
+| `.editorconfig` | `~/.editorconfig` |
+
+<!-- END LINKS -->
+
+<sub>Generated from [`links.conf`](./links.conf) by `make docs` — do not edit by hand.</sub>
 
 Three design decisions shape the installer:
 
@@ -128,6 +159,7 @@ Run these from inside `~/.dotfiles`:
 | `make uninstall` | Remove all configs applied by this repo |
 | `make doctor` | Verify tools are installed and links are correct |
 | `make deps` | Install or update all tools via Homebrew |
+| `make docs` | Regenerate the generated sections of this README |
 | `make cleanup` | Preview Homebrew packages that can be removed |
 | `make cleanup-apply` | Remove the packages shown by `cleanup` |
 
@@ -170,7 +202,7 @@ make doctor
 | **[Zsh](https://www.zsh.org)** | Shell | Aliases, smarter history, Powerlevel10k prompt, syntax highlighting, autosuggestions |
 | **[Neovim](https://neovim.io)** | Editor | Full plugin setup, installed automatically on first launch |
 | **[Kitty](https://sw.kovidgoyal.net/kitty)** | Terminal | Font, colors, and keyboard shortcuts |
-| **[Tmux](https://github.com/tmux/tmux)** | Multiplexer | Layout and keybinding configuration |
+| **[Tmux](https://github.com/tmux/tmux)** | Multiplexer | An owned ~90-line config — vi copy mode, mouse, seamless pane navigation with Neovim |
 | **[Git](https://git-scm.com)** | Version control | Global ignore rules, commit template, [delta](https://github.com/dandavison/delta) diffs |
 
 The Brewfile also installs modern CLI replacements — [eza](https://github.com/eza-community/eza) (`ls`), [bat](https://github.com/sharkdp/bat) (`cat`), [fd](https://github.com/sharkdp/fd) (`find`), [ripgrep](https://github.com/BurntSushi/ripgrep) (search), [fzf](https://github.com/junegunn/fzf) (fuzzy finding), [zoxide](https://github.com/ajeetdsouza/zoxide) (smarter `cd`) — plus [Lazygit](https://github.com/jesseduffield/lazygit), [jq](https://jqlang.github.io/jq), and the [fnm](https://github.com/Schniz/fnm) and [uv](https://github.com/astral-sh/uv) runtime managers.
@@ -181,7 +213,7 @@ Contributions are welcome — whether it is a bug fix, a new tool integration, o
 
 1. **Fork** the repository and create a feature branch: `git checkout -b feat/my-improvement`
 2. **Make your change.** Keep scripts POSIX-friendly Bash with `set -euo pipefail`, and test with `make dry-run` before `make install`.
-3. **Verify** with `make doctor` on a clean run.
+3. **Verify** with `make doctor` on a clean run. CI runs `shellcheck`, `zsh -n`, and a dry-run install on macOS.
 4. **Open a pull request** with a clear description of the problem and your solution.
 
 Found a bug or have an idea? [Open an issue](https://github.com/ntwrcht/dotfiles/issues) — clear reproduction steps make fixes fast.

@@ -13,14 +13,31 @@ fi
 ##############################################################
 # => ZSH Startup with Tmux
 ##############################################################
-if command -v tmux &> /dev/null && [ -z "$TMUX" ] && [ -z "${DOTFILES_SKIP_TMUX:-}" ]; then
-    tmux || tmux new
+# `tmux` with no arguments means `new-session` -- it never attaches. That made
+# every terminal spawn ANOTHER session, and left the `|| tmux new` fallback
+# unreachable. `new-session -A -D -s main` attaches if `main` exists, creates it
+# otherwise, and detaches any other client.
+#
+# The guards below keep tmux out of editor and IDE terminals, which are
+# interactive (so .zshrc runs) but do not set $TMUX. $VIM in particular matters
+# here: :FloatermNew nnn / lazygit would otherwise start tmux inside a floating
+# window when nvim is launched outside tmux.
+if command -v tmux >/dev/null 2>&1 \
+  && [ -z "$TMUX" ] \
+  && [ -z "${DOTFILES_SKIP_TMUX:-}" ] \
+  && [ -z "${VIM:-}" ] && [ -z "${NVIM:-}" ] && [ -z "${INSIDE_EMACS:-}" ] \
+  && [ "${TERM_PROGRAM:-}" != "vscode" ] \
+  && [ "${TERMINAL_EMULATOR:-}" != "JetBrains-JediTerm" ] \
+  && [ -z "${VSCODE_RESOLVING_ENVIRONMENT:-}" ] \
+  && [ -z "${SSH_CONNECTION:-}" ]; then
+    exec tmux new-session -A -D -s main
 fi
 ##############################################################
 
 # Load modules
 source "$DOTFILES/zsh/env.zsh"
 source "$DOTFILES/zsh/path.zsh"
+source "$DOTFILES/zsh/theme.zsh"   # must precede fzf.zsh — it reads $CTP_*
 source "$DOTFILES/zsh/fzf.zsh"
 source "$DOTFILES/zsh/plugins.zsh"
 source "$DOTFILES/zsh/aliases.zsh"

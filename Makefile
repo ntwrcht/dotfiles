@@ -26,6 +26,10 @@ doctor: ## Run diagnostic check on tools and environment
 deps: ## Install Homebrew dependencies from Brewfile
 	brew bundle
 
+.PHONY: docs
+docs: ## Regenerate the generated sections of README.md
+	./scripts/gen-readme-links
+
 .PHONY: cleanup
 cleanup: ## Preview orphaned Homebrew runtime candidates
 	./cleanup-deps

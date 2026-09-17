@@ -4,6 +4,8 @@ set -euo pipefail
 # --- Colors & Symbols ---
 # shellcheck source=lib/colors.sh
 source "$(dirname "${BASH_SOURCE[0]}")/lib/colors.sh"
+# shellcheck source=lib/links.sh
+source "$(dirname "${BASH_SOURCE[0]}")/lib/links.sh"
 
 SYM_OK="✔"
 SYM_ERR="✖"
@@ -16,11 +18,11 @@ DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DRY_RUN=0
 
 # --- Helper Functions ---
-log_info() { printf "${CL_BLUE}${SYM_INFO} %b${CL_RESET}\n" "$1"; }
-log_success() { printf "${CL_GREEN}${SYM_OK} %b${CL_RESET}\n" "$1"; }
-log_warn() { printf "${CL_YELLOW}${SYM_WARN} %b${CL_RESET}\n" "$1"; }
-log_error() { printf "${CL_RED}${SYM_ERR} %b${CL_RESET}\n" "$1"; }
-log_header() { printf "\n${CL_BOLD}${CL_MAGENTA}==> %b${CL_RESET}\n" "$1"; }
+log_info() { printf '%s%s %s%s\n' "$CL_BLUE" "$SYM_INFO" "$1" "$CL_RESET"; }
+log_success() { printf '%s%s %s%s\n' "$CL_GREEN" "$SYM_OK" "$1" "$CL_RESET"; }
+log_warn() { printf '%s%s %s%s\n' "$CL_YELLOW" "$SYM_WARN" "$1" "$CL_RESET"; }
+log_error() { printf '%s%s %s%s\n' "$CL_RED" "$SYM_ERR" "$1" "$CL_RESET"; }
+log_header() { printf '\n%s%s==> %s%s\n' "$CL_BOLD" "$CL_MAGENTA" "$1" "$CL_RESET"; }
 
 usage() {
   cat <<USAGE
@@ -51,20 +53,22 @@ fi
 
 run() {
   if [[ "$DRY_RUN" -eq 1 ]]; then
-    printf "${CL_CYAN}[dry-run]${CL_RESET} rm %q\n" "$1"
+    printf '%s[dry-run]%s rm %q\n' "$CL_CYAN" "$CL_RESET" "$1"
   else
     rm "$1"
   fi
 }
 
+# unlink_file <source> <target> — matches the for_each_link callback contract.
 unlink_file() {
-  local target="$1"
+  local source="$1"
+  local target="$2"
 
   if [[ -L "$target" ]]; then
-    # Check if it points to our dotfiles directory
+    # Only remove links that point back into this repo.
     local link_source
     link_source="$(readlink "$target")"
-    if [[ "$link_source" == "$DOTFILES_DIR"* ]]; then
+    if [[ "$link_source" == "$source" || "$link_source" == "$DOTFILES_DIR"* ]]; then
       log_info "${SYM_TRASH} Unlinking: ${CL_BOLD}${target}${CL_RESET}"
       run "$target"
     else
@@ -80,7 +84,7 @@ unlink_file() {
 confirm() {
   local prompt="$1"
   local answer
-  printf "${CL_BOLD}${CL_YELLOW}${SYM_WARN} %s [y/N]${CL_RESET} " "$prompt"
+  printf '%s%s%s %s [y/N]%s ' "$CL_BOLD" "$CL_YELLOW" "$SYM_WARN" "$prompt" "$CL_RESET"
   read -r answer
   case "$answer" in
     y|Y|yes|YES) return 0 ;;
@@ -91,15 +95,7 @@ confirm() {
 # --- Execution ---
 log_header "Removing Dotfile Symlinks"
 
-unlink_file "${HOME}/.vimrc"
-unlink_file "${HOME}/.zshrc"
-unlink_file "${HOME}/.config/nvim"
-unlink_file "${HOME}/.config/kitty"
-unlink_file "${HOME}/.config/git"
-unlink_file "${HOME}/.gitconfig"
-unlink_file "${HOME}/.tmux.conf"
-unlink_file "${HOME}/.tmux.conf.local"
-unlink_file "${HOME}/.editorconfig"
+for_each_link unlink_file
 
 log_header "Additional Cleanup"
 
@@ -122,7 +118,7 @@ if [[ -d "$venv_dir" ]]; then
   fi
 fi
 
-printf "\n${CL_BOLD}${CL_GREEN}✨ Uninstallation Complete!${CL_RESET}\n"
+printf '\n%s%s✨ Uninstallation Complete!%s\n' "$CL_BOLD" "$CL_GREEN" "$CL_RESET"
 log_info "Note: Your original files (if any) are still in ${CL_BOLD}~/.dotfiles-backup/${CL_RESET}"
 log_info "You can now safely remove the ${CL_BOLD}${DOTFILES_DIR}${CL_RESET} directory if desired."
 echo
