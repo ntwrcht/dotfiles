@@ -43,6 +43,7 @@ end
 
 require("lazy").setup({
   -- Core & UI
+  { "catppuccin/nvim", name = "catppuccin", priority = 1000 },
   { "nvim-lualine/lualine.nvim", dependencies = { "nvim-tree/nvim-web-devicons" } },
   -- Pinned to `master`: the `main` branch is the incompatible rewrite and does
   -- not provide `nvim-treesitter.configs`, which the setup call below uses.
@@ -144,7 +145,7 @@ require("lazy").setup({
   { "leafOfTree/vim-vue-plugin" },
   { "madox2/vim-ai" },
 }, {
-  install = { colorscheme = { "xcode_dark", "habamax" } },
+  install = { colorscheme = { "catppuccin-mocha", "xcode_dark", "habamax" } },
   checker = { enabled = false },
   rocks = { enabled = false },
 })
@@ -163,7 +164,7 @@ local lualine_status_ok, lualine = pcall(require, "lualine")
 if lualine_status_ok then
   lualine.setup {
     options = {
-      theme = 'auto',
+      theme = 'catppuccin',
       section_separators = '',
       component_separators = '|',
       icons_enabled = true,
@@ -262,18 +263,19 @@ noremap <leader>0 :tablast<cr>
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Theme
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-let g:github_colors_soft = 1
-
 set background=dark
 set termguicolors
 
-colorscheme xcode_dark
+" One palette across kitty, tmux, nvim, fzf, delta and bat.
+" xcode_dark.vim is kept in colors/ as an offline fallback.
+colorscheme catppuccin-mocha
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => FloatTerm
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-hi Floaterm guibg=#222222
-hi FloatermBorder guibg=#222222 guifg=#3A3A3A
+" Catppuccin Mocha: base / surface1
+hi Floaterm guibg=#1e1e2e
+hi FloatermBorder guibg=#1e1e2e guifg=#45475a
 
 let g:floaterm_opener = "tabe"
 let g:floaterm_autoclose = 2
@@ -433,5 +435,6 @@ inoremap <silent><expr> <TAB>
 inoremap <expr><S-TAB> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
 inoremap <silent><expr> <c-space> coc#refresh()
 
-hi CocSearch ctermfg=12 guifg=#18A3FF
-hi CocMenuSel ctermbg=109 guibg=#13354A
+" Catppuccin Mocha: blue / surface1
+hi CocSearch ctermfg=12 guifg=#89b4fa
+hi CocMenuSel ctermbg=109 guibg=#45475a

@@ -37,6 +37,7 @@ fi
 # Load modules
 source "$DOTFILES/zsh/env.zsh"
 source "$DOTFILES/zsh/path.zsh"
+source "$DOTFILES/zsh/theme.zsh"   # must precede fzf.zsh — it reads $CTP_*
 source "$DOTFILES/zsh/fzf.zsh"
 source "$DOTFILES/zsh/plugins.zsh"
 source "$DOTFILES/zsh/aliases.zsh"

@@ -10,6 +10,12 @@
 	navigate = true
 	side-by-side = true
 	line-numbers = true
+	; Matches the Catppuccin Mocha palette used by kitty, tmux and nvim.
+	syntax-theme = Catppuccin Mocha
+	minus-style = syntax "#443244"
+	minus-emph-style = syntax "#6b2d43"
+	plus-style = syntax "#2c3b34"
+	plus-emph-style = syntax "#3f5f4a"
 [diff]
 	colorMoved = default
 [merge]
