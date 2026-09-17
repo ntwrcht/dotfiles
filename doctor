@@ -4,6 +4,8 @@ set -euo pipefail
 # --- Colors & Symbols ---
 # shellcheck source=lib/colors.sh
 source "$(dirname "${BASH_SOURCE[0]}")/lib/colors.sh"
+# shellcheck source=lib/links.sh
+source "$(dirname "${BASH_SOURCE[0]}")/lib/links.sh"
 
 SYM_OK="✔"
 SYM_MISS="✖"
@@ -11,6 +13,7 @@ SYM_WARN="⚠"
 SYM_NOTE="ℹ"
 
 # --- Configuration ---
+DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 required_commands=(git zsh nvim tmux)
 optional_commands=(bat brew curl ddgr delta eza fd fnm rg vim fzf jq lazygit nnn kitty tldr uv zoxide)
 
@@ -57,6 +60,32 @@ check_command() {
   fi
 }
 
+# check_link <source> <target>
+# Reports OK only when target is a symlink that actually resolves to source.
+check_link() {
+  local source="$1"
+  local target="$2"
+  local name
+  name="$(display_path "$target")"
+
+  if [[ ! -L "$target" ]]; then
+    if [[ -e "$target" ]]; then
+      print_result "NOTE" "$name" "real file, not linked — run ./install"
+    else
+      print_result "NOTE" "$name" "not linked — run ./install"
+    fi
+    notices=$((notices + 1))
+    return
+  fi
+
+  if [[ "$(readlink "$target")" == "$source" ]]; then
+    print_result "OK" "$name" "linked"
+  else
+    print_result "NOTE" "$name" "links elsewhere: $(readlink "$target")"
+    notices=$((notices + 1))
+  fi
+}
+
 # --- Execution ---
 printf "${CL_BOLD}${CL_CYAN}🩺 Dotfiles Doctor${CL_RESET}\n"
 
@@ -71,22 +100,7 @@ for command_name in "${optional_commands[@]}"; do
 done
 
 log_header "Setup & Environment"
-if [[ -L "${HOME}/.zshrc" ]]; then
-  print_result "OK" "~/.zshrc" "linked"
-else
-  print_result "NOTE" "~/.zshrc" "not a symlink"
-  notices=$((notices + 1))
-fi
-
-for config_dir in nvim kitty git; do
-  target="${HOME}/.config/${config_dir}"
-  if [[ -L "$target" ]]; then
-    print_result "OK" "~/.config/${config_dir}" "linked"
-  else
-    print_result "NOTE" "~/.config/${config_dir}" "not linked — run ./install"
-    notices=$((notices + 1))
-  fi
-done
+for_each_link check_link
 
 if [[ -d "${HOME}/.oh-my-zsh" ]]; then
   print_result "OK" "oh-my-zsh" "installed"

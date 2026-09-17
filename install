@@ -4,6 +4,8 @@ set -euo pipefail
 # --- Colors & Symbols ---
 # shellcheck source=lib/colors.sh
 source "$(dirname "${BASH_SOURCE[0]}")/lib/colors.sh"
+# shellcheck source=lib/links.sh
+source "$(dirname "${BASH_SOURCE[0]}")/lib/links.sh"
 
 SYM_OK="✔"
 SYM_ERR="✖"
@@ -216,15 +218,7 @@ ensure_oh_my_zsh() {
 }
 
 log_header "Installing Dotfiles"
-link_file "${DOTFILES_DIR}/.vimrc" "${HOME}/.vimrc"
-link_file "${DOTFILES_DIR}/.zshrc" "${HOME}/.zshrc"
-link_file "${DOTFILES_DIR}/.config/nvim"  "${HOME}/.config/nvim"
-link_file "${DOTFILES_DIR}/.config/kitty" "${HOME}/.config/kitty"
-link_file "${DOTFILES_DIR}/.config/git"   "${HOME}/.config/git"
-link_file "${DOTFILES_DIR}/.gitconfig" "${HOME}/.gitconfig"
-link_file "${DOTFILES_DIR}/.tmux.conf" "${HOME}/.tmux.conf"
-link_file "${DOTFILES_DIR}/.tmux.conf.local" "${HOME}/.tmux.conf.local"
-link_file "${DOTFILES_DIR}/.editorconfig" "${HOME}/.editorconfig"
+for_each_link link_file
 
 ensure_secrets_file
 ensure_nvim_python_provider
