@@ -38,6 +38,7 @@ alias myip="curl -4 -s ifconfig.me && echo"
 alias myip6="curl -6 -s ifconfig.me && echo"
 alias rm="rm -i" # Safety first
 alias ports="sudo lsof -iTCP -sTCP:LISTEN -P -n"
+alias duh="du -hd 1 | sort -h" # What is eating this directory
 
 # --- Containers ---
 alias d="docker"
