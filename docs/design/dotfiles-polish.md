@@ -14,7 +14,7 @@ Make the dotfiles repo easier to change, harder to break, and visually coherent 
 | Adding a managed config is a one-line change | ✅ **Done** — verified: one `links.conf` line propagates to install, uninstall, and doctor |
 | A broken change is caught before it reaches a machine | CI fails on shellcheck error or a dry-run install failure |
 | Every surface shares one palette | kitty, tmux, nvim, fzf, delta, bat all render Catppuccin Mocha |
-| The repo folder is its own size | ✅ **Done** — `du -sh ~/.dotfiles` went 851 MB → 102 MB. Reaching ~30 MB needs D9. |
+| The repo folder is its own size | ✅ **Done** — 851 MB → **3.8 MB** locally, beating the ~30 MB target. Fresh clones stay at 97 MB until the backup tag is deleted. |
 
 ## Non-Goals
 
@@ -58,7 +58,7 @@ The repo is a symlink farm: configs live here, `install` links them into `$HOME`
 | D6 | Keep oh-my-tmux vendored, add a provenance header | Git submodule; hand-written tmux.conf | A submodule adds a clone step and a failure mode for a file that changes yearly. Rewriting risks losing familiar behaviour. |
 | D7 | Prune `.gitignore` to rules that can actually match | Leave as-is | This repo is not `$HOME`. Dead rules obscure the live ones. |
 | ~~D8~~ | **RETRACTED 2026-09-17.** Track `Brewfile.lock.json` | — | Not implementable: Homebrew 7.0.3 removed `Brewfile.lock.json`; `brew bundle --help` no longer mentions it. No replacement lock mechanism exists. Machine drift stays an accepted limitation. |
-| **D9** | **OPEN — awaiting user.** Whether to rewrite git history to purge the 101 MB of coc blobs | Accept a ~102 MB repo | Requires `git filter-repo` + force-push to a shared remote. Materially riskier than anything else here. Not started until decided. |
+| **D9** | **TAKEN 2026-09-17.** Rewrote git history with `git filter-repo`, force-pushed `master` and the working branch | Accept a ~102 MB repo | User authorised explicitly. Local repo: 102 MB → **3.8 MB** (`.git` 101 MB → 3.4 MB); 0 coc objects remain. `pre-filter-repo-backup` was pushed to origin *before* the rewrite as an escape hatch — **the remote therefore still serves ~97 MB until that tag is deleted.** |
 
 ## The Manifest
 
@@ -185,7 +185,7 @@ Ordered by dependency. **WS1 → WS4 → WS5** is a hard chain. WS2 and WS3 are 
 | 2 | `./uninstall --dry-run` output identical before and after | WS1 |
 | 3 | `./doctor` output compared before and after; the only diff is the five additional link checks the manifest adds | WS1 |
 | 4 | `make doctor` reports zero missing required tools and zero notices — measured *after* `./install` has run | WS1, WS2 |
-| 5 | `du -sh ~/.dotfiles` is ~102 MB, or ~30 MB if D9 is taken | WS0, D9 |
+| 5 | ✅ `du -sh ~/.dotfiles` = **3.8 MB**. Fresh-clone size is **97 MB** until `pre-filter-repo-backup` is deleted from origin | WS0, D9 |
 | 6 | Fresh-clone rehearsal: clone to a temp directory, `./install --dry-run`, every target resolves | WS1 |
 | 7 | Visual check: kitty, tmux, and nvim all render one palette; icons render in Hack Nerd Font | WS2 |
 | 8 | CI green on push | WS5 |
