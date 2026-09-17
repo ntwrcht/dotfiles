@@ -11,10 +11,10 @@ Make the dotfiles repo easier to change, harder to break, and visually coherent 
 
 | Signal | Measured by |
 |---|---|
-| Adding a managed config is a one-line change | Editing `links.conf` alone updates install, uninstall, and doctor |
+| Adding a managed config is a one-line change | ✅ **Done** — verified: one `links.conf` line propagates to install, uninstall, and doctor |
 | A broken change is caught before it reaches a machine | CI fails on shellcheck error or a dry-run install failure |
 | Every surface shares one palette | kitty, tmux, nvim, fzf, delta, bat all render Catppuccin Mocha |
-| The repo folder is its own size | `du -sh ~/.dotfiles` drops from **851 MB** to ~102 MB (working tree only) — or to ~30 MB if D9 is taken |
+| The repo folder is its own size | ✅ **Done** — `du -sh ~/.dotfiles` went 851 MB → 102 MB. Reaching ~30 MB needs D9. |
 
 ## Non-Goals
 
@@ -57,7 +57,7 @@ The repo is a symlink farm: configs live here, `install` links them into `$HOME`
 | D5 | CI runs shellcheck + `zsh -n` + `./install --dry-run` on a macOS runner | Lint only; no CI | The dry-run is what protects the property that matters: a fresh Mac clone works. |
 | D6 | Keep oh-my-tmux vendored, add a provenance header | Git submodule; hand-written tmux.conf | A submodule adds a clone step and a failure mode for a file that changes yearly. Rewriting risks losing familiar behaviour. |
 | D7 | Prune `.gitignore` to rules that can actually match | Leave as-is | This repo is not `$HOME`. Dead rules obscure the live ones. |
-| D8 | Track `Brewfile.lock.json` | Leave untracked | Stops machines drifting apart over time. |
+| ~~D8~~ | **RETRACTED 2026-09-17.** Track `Brewfile.lock.json` | — | Not implementable: Homebrew 7.0.3 removed `Brewfile.lock.json`; `brew bundle --help` no longer mentions it. No replacement lock mechanism exists. Machine drift stays an accepted limitation. |
 | **D9** | **OPEN — awaiting user.** Whether to rewrite git history to purge the 101 MB of coc blobs | Accept a ~102 MB repo | Requires `git filter-repo` + force-push to a shared remote. Materially riskier than anything else here. Not started until decided. |
 
 ## The Manifest
@@ -114,7 +114,7 @@ Ordered by dependency. **WS1 → WS4 → WS5** is a hard chain. WS2 and WS3 are 
 
 1. Move `~/.dotfiles/.config/coc/` to `~/.Trash/coc-dotfiles-fossil-<timestamp>/`.
 2. Prune `.gitignore` from 200+ lines to ~30: keep the `.config/*` allowlist, the secrets block, the AI-agent block, macOS junk, and nvim/vim state. Drop every inherited home-directory rule (`/.adobe`, `/.belastingdienst.nl`, `/.bi_li3`, `/.ackrc`, and the rest of that lineage).
-3. Run `brew bundle` to generate `Brewfile.lock.json` (it does not exist yet), then add it to tracking.
+3. ~~Brewfile lock~~ — **dropped, see D8.** Separately noted while checking: `brew bundle check` reports 12 formulae/casks as outdated, so a future `brew bundle install` on this machine is an *upgrade*, not a no-op. That is a user decision, not part of this plan.
 
 ### WS1 — Manifest refactor (core)
 
