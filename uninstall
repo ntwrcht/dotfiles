@@ -18,11 +18,11 @@ DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DRY_RUN=0
 
 # --- Helper Functions ---
-log_info() { printf "${CL_BLUE}${SYM_INFO} %b${CL_RESET}\n" "$1"; }
-log_success() { printf "${CL_GREEN}${SYM_OK} %b${CL_RESET}\n" "$1"; }
-log_warn() { printf "${CL_YELLOW}${SYM_WARN} %b${CL_RESET}\n" "$1"; }
-log_error() { printf "${CL_RED}${SYM_ERR} %b${CL_RESET}\n" "$1"; }
-log_header() { printf "\n${CL_BOLD}${CL_MAGENTA}==> %b${CL_RESET}\n" "$1"; }
+log_info() { printf '%s%s %s%s\n' "$CL_BLUE" "$SYM_INFO" "$1" "$CL_RESET"; }
+log_success() { printf '%s%s %s%s\n' "$CL_GREEN" "$SYM_OK" "$1" "$CL_RESET"; }
+log_warn() { printf '%s%s %s%s\n' "$CL_YELLOW" "$SYM_WARN" "$1" "$CL_RESET"; }
+log_error() { printf '%s%s %s%s\n' "$CL_RED" "$SYM_ERR" "$1" "$CL_RESET"; }
+log_header() { printf '\n%s%s==> %s%s\n' "$CL_BOLD" "$CL_MAGENTA" "$1" "$CL_RESET"; }
 
 usage() {
   cat <<USAGE
@@ -53,7 +53,7 @@ fi
 
 run() {
   if [[ "$DRY_RUN" -eq 1 ]]; then
-    printf "${CL_CYAN}[dry-run]${CL_RESET} rm %q\n" "$1"
+    printf '%s[dry-run]%s rm %q\n' "$CL_CYAN" "$CL_RESET" "$1"
   else
     rm "$1"
   fi
@@ -84,7 +84,7 @@ unlink_file() {
 confirm() {
   local prompt="$1"
   local answer
-  printf "${CL_BOLD}${CL_YELLOW}${SYM_WARN} %s [y/N]${CL_RESET} " "$prompt"
+  printf '%s%s%s %s [y/N]%s ' "$CL_BOLD" "$CL_YELLOW" "$SYM_WARN" "$prompt" "$CL_RESET"
   read -r answer
   case "$answer" in
     y|Y|yes|YES) return 0 ;;
@@ -118,7 +118,7 @@ if [[ -d "$venv_dir" ]]; then
   fi
 fi
 
-printf "\n${CL_BOLD}${CL_GREEN}✨ Uninstallation Complete!${CL_RESET}\n"
+printf '\n%s%s✨ Uninstallation Complete!%s\n' "$CL_BOLD" "$CL_GREEN" "$CL_RESET"
 log_info "Note: Your original files (if any) are still in ${CL_BOLD}~/.dotfiles-backup/${CL_RESET}"
 log_info "You can now safely remove the ${CL_BOLD}${DOTFILES_DIR}${CL_RESET} directory if desired."
 echo
