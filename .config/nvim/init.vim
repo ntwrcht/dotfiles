@@ -75,6 +75,7 @@ require("lazy").setup({
         { "<leader>r", desc = "Live Grep" },
         { "<leader>b", desc = "Buffers" },
         { "<leader>g", desc = "Lazygit" },
+        { "<leader>k", desc = "Claude Code" },
         { "<leader>ll", desc = "Lazy Log" },
         { "<leader>ac", desc = "CoC Action" },
         { "<leader>qf", desc = "CoC Fix" },
@@ -206,6 +207,17 @@ EOF
 " => General
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set updatetime=200
+
+" Claude Code (and any other tool) edits files on disk while they are open
+" here. Without autoread the buffer silently goes stale, and a later :w
+" overwrites those edits with the version Vim loaded earlier.
+" tmux forwards terminal focus (focus-events on in .tmux.conf), so
+" FocusGained fires reliably; updatetime above makes CursorHold fire fast.
+set autoread
+autocmd FocusGained,BufEnter,CursorHold,CursorHoldI * silent! checktime
+autocmd FileChangedShellPost * echohl WarningMsg
+      \ | echo "Buffer reloaded — changed on disk"
+      \ | echohl None
 set history=10000
 set undofile
 set hidden
@@ -281,6 +293,7 @@ let g:floaterm_wintype = "float"
 
 nnoremap <silent> <leader>d :FloatermNew nnn -deH<cr>
 nnoremap <silent> <leader>g :FloatermNew lazygit<cr>
+nnoremap <silent> <leader>k :FloatermNew --height=0.9 --width=0.9 claude<cr>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Prettier
