@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+jobs:
+  lint:
+    name: Lint shell
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install zsh
+        run: sudo apt-get update && sudo apt-get install -y zsh
+
+      # shellcheck ships on ubuntu-latest runners.
+      - name: shellcheck
+        run: |
+          shellcheck --severity=warning \
+            install uninstall doctor cleanup-deps \
+            scripts/gen-readme-links lib/*.sh
+
+      - name: zsh syntax
+        run: |
+          for f in .zshrc zsh/*.zsh; do
+            zsh -n "$f" || exit 1
+          done
+
+  smoke:
+    name: Dry-run install (macOS)
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Proves every manifest entry resolves and the installer runs end to end
+      # on a machine that has never seen this repo. Nothing is written: every
+      # mutating step goes through `run`, which only prints under --dry-run.
+      - name: install --dry-run
+        run: ./install --dry-run
+
+      - name: uninstall --dry-run
+        run: ./uninstall --dry-run < /dev/null
+
+      - name: doctor
+        # doctor exits non-zero only when a REQUIRED tool is missing; a bare
+        # runner legitimately lacks the optional ones.
+        run: ./doctor || true
+
+  docs:
+    name: Generated docs are current
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Regenerate and check for drift
+        run: |
+          make docs
+          git diff --exit-code README.md \
+            || { echo "::error::README.md is stale — run 'make docs' and commit."; exit 1; }

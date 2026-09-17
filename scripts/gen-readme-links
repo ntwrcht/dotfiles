@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+# Regenerates the managed-symlink table in README.md from links.conf, so the
+# README cannot drift from what the installer actually does.
+#
+# Rewrites only the block between the BEGIN/END markers. Run via `make docs`.
+set -euo pipefail
+
+DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+README="${DOTFILES_DIR}/README.md"
+BEGIN="<!-- BEGIN LINKS -->"
+END="<!-- END LINKS -->"
+
+if ! grep -qF "$BEGIN" "$README" || ! grep -qF "$END" "$README"; then
+  echo "error: $README is missing the $BEGIN / $END markers" >&2
+  exit 1
+fi
+
+tmp="$(mktemp)"
+trap 'rm -f "$tmp"' EXIT
+
+skip=0
+count=0
+while IFS= read -r line; do
+  case "$line" in
+    "$BEGIN")
+      printf '%s\n\n' "$line" >> "$tmp"
+      printf '| Source in repo | Linked to |\n| :--- | :--- |\n' >> "$tmp"
+      while read -r src dst _; do
+        [[ -z "$src" || "$src" == \#* ]] && continue
+        printf '| `%s` | `~/%s` |\n' "$src" "$dst" >> "$tmp"
+        count=$((count + 1))
+      done < "${DOTFILES_DIR}/links.conf"
+      printf '\n' >> "$tmp"
+      skip=1
+      continue
+      ;;
+    "$END")
+      skip=0
+      ;;
+  esac
+  [[ "$skip" -eq 1 ]] && continue
+  printf '%s\n' "$line" >> "$tmp"
+done < "$README"
+
+mv "$tmp" "$README"
+trap - EXIT
+echo "README.md: regenerated table of ${count} managed links"

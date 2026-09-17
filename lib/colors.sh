@@ -1,4 +1,6 @@
 # shellcheck shell=bash
+# shellcheck disable=SC2034  # every CL_* is consumed by the scripts that source
+                            # this file; shellcheck cannot see across `source`.
 # Terminal colours, as real escape sequences ($'...' rather than literal
 # backslashes) so callers can print them with %s instead of %b — which is what
 # kept every log helper in this repo tripping shellcheck's SC2059.
