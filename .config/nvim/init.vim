@@ -213,7 +213,11 @@ set updatetime=200
 " overwrites those edits with the version Vim loaded earlier.
 " tmux forwards terminal focus (focus-events on in .tmux.conf), so
 " FocusGained fires reliably; updatetime above makes CursorHold fire fast.
-set autoread
+"
+" Note: 'autoread' is deliberately NOT set here. Neovim enables it by default
+" (:help nvim-defaults). It only means "reload without prompting once a change
+" is detected" -- nothing detects the change unless checktime runs, so the
+" autocmd below is what actually does the work.
 autocmd FocusGained,BufEnter,CursorHold,CursorHoldI * silent! checktime
 autocmd FileChangedShellPost * echohl WarningMsg
       \ | echo "Buffer reloaded — changed on disk"
