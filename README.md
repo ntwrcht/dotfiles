@@ -32,6 +32,7 @@ The result: a new machine goes from factory state to a fully configured developm
   - [Installation](#installation)
 - [Usage](#usage)
   - [Day-to-Day Commands](#day-to-day-commands)
+  - [Reading Markdown](#reading-markdown)
   - [Previewing Changes](#previewing-changes)
   - [Managing Secrets](#managing-secrets)
   - [Health Checks](#health-checks)
@@ -163,6 +164,20 @@ Run these from inside `~/.dotfiles`:
 | `make cleanup` | Preview Homebrew packages that can be removed |
 | `make cleanup-apply` | Remove the packages shown by `cleanup` |
 
+### Reading Markdown
+
+`md` renders markdown in [glow](https://github.com/charmbracelet/glow), picking the file first:
+
+| Command | What it does |
+| :--- | :--- |
+| `md` | Lists every markdown file below the current directory in fzf, previews the highlighted one, opens the chosen one |
+| `md docs/` | The same picker, scoped to a directory |
+| `md README.md` | Skips the picker and renders the file |
+
+In the picker, `enter` reads, `ctrl-e` opens the file in `$EDITOR`, and `esc` quits.
+
+Neovim reaches the same reader in a floating terminal: `<leader>m` renders the current markdown buffer, `<leader>M` always starts at the picker, and `:Glow [file]` does either. The script lives in [`bin/md`](./bin/md) and is on `PATH` via [`zsh/path.zsh`](./zsh/path.zsh), so both surfaces run one implementation.
+
 ### Previewing Changes
 
 The installer supports a first-class dry-run mode. Every action — links, backups, downloads — is printed instead of executed:
@@ -205,7 +220,7 @@ make doctor
 | **[Tmux](https://github.com/tmux/tmux)** | Multiplexer | An owned ~90-line config — vi copy mode, mouse, seamless pane navigation with Neovim |
 | **[Git](https://git-scm.com)** | Version control | Global ignore rules, commit template, [delta](https://github.com/dandavison/delta) diffs |
 
-The Brewfile also installs modern CLI replacements — [eza](https://github.com/eza-community/eza) (`ls`), [bat](https://github.com/sharkdp/bat) (`cat`), [fd](https://github.com/sharkdp/fd) (`find`), [ripgrep](https://github.com/BurntSushi/ripgrep) (search), [fzf](https://github.com/junegunn/fzf) (fuzzy finding), [zoxide](https://github.com/ajeetdsouza/zoxide) (smarter `cd`) — plus [Lazygit](https://github.com/jesseduffield/lazygit), [jq](https://jqlang.github.io/jq), and the [fnm](https://github.com/Schniz/fnm) and [uv](https://github.com/astral-sh/uv) runtime managers.
+The Brewfile also installs modern CLI replacements — [eza](https://github.com/eza-community/eza) (`ls`), [bat](https://github.com/sharkdp/bat) (`cat`), [fd](https://github.com/sharkdp/fd) (`find`), [ripgrep](https://github.com/BurntSushi/ripgrep) (search), [fzf](https://github.com/junegunn/fzf) (fuzzy finding), [glow](https://github.com/charmbracelet/glow) (markdown), [zoxide](https://github.com/ajeetdsouza/zoxide) (smarter `cd`) — plus [Lazygit](https://github.com/jesseduffield/lazygit), [jq](https://jqlang.github.io/jq), and the [fnm](https://github.com/Schniz/fnm) and [uv](https://github.com/astral-sh/uv) runtime managers.
 
 ## Contributing
 

@@ -84,6 +84,7 @@ require("lazy").setup({
         { "<leader>cm", desc = "Git Commit Message" },
         { "<leader>py", desc = "Prettier" },
         { "<leader>d", desc = "Explorer" },
+        { "<leader>m", desc = "Read Markdown (glow)" },
         -- Group and hide noisy tab mappings
         { "<leader>0", hidden = true },
         { "<leader>1", hidden = true },
@@ -298,6 +299,38 @@ let g:floaterm_wintype = "float"
 nnoremap <silent> <leader>d :FloatermNew nnn -deH<cr>
 nnoremap <silent> <leader>g :FloatermNew lazygit<cr>
 nnoremap <silent> <leader>k :FloatermNew --height=0.9 --width=0.9 claude<cr>
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Markdown (glow)
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" `md` is $DOTFILES/bin/md, put on PATH by zsh/path.zsh, so this floaterm and
+" the shell share one reader. Called with a file it renders it; called bare it
+" opens the fzf picker over every markdown file under the cwd.
+"
+" vim-instant-markdown covers the browser preview; this is the terminal one.
+function! s:Glow(target) abort
+  let l:file = empty(a:target) ? expand('%:p') : fnamemodify(a:target, ':p')
+
+  " Only inherit the current buffer when it is actually markdown -- otherwise
+  " <leader>m on a Go file would hand glow something it cannot render.
+  if empty(a:target) && &filetype !=# 'markdown'
+    let l:file = ''
+  endif
+
+  let l:cmd = 'md'
+  if !empty(l:file) && filereadable(l:file)
+    let l:cmd .= ' ' . shellescape(l:file)
+  endif
+
+  execute 'FloatermNew --height=0.9 --width=0.9 ' . l:cmd
+endfunction
+
+command! -nargs=? -complete=file Glow call s:Glow(<q-args>)
+
+" <leader>m  reads the current markdown buffer, or picks a file if there is none
+" <leader>M  always starts at the picker
+nnoremap <silent> <leader>m :Glow<cr>
+nnoremap <silent> <leader>M :FloatermNew --height=0.9 --width=0.9 md<cr>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Prettier

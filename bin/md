@@ -1,0 +1,76 @@
+#!/usr/bin/env bash
+# md — read markdown in glow, picking the file first.
+#
+# Run bare, it lists every markdown file under the current directory (or under
+# DIR) in fzf, renders the highlighted one in the preview pane, and opens the
+# chosen one in glow. Given a file or a URL it skips the picker and renders
+# straight away, so `md` works as the markdown reader in both directions.
+#
+# Picker keys:  enter → read in glow   ctrl-e → edit in $EDITOR   esc → quit
+#
+# Neovim reaches the same picker through :Glow (.config/nvim/init.vim), which
+# is why this is an executable on PATH rather than a zsh function.
+set -euo pipefail
+
+die() { printf 'md: %s\n' "$1" >&2; exit 1; }
+
+# Resolved before any cd, so --preview can call back into this same file.
+self="$(cd "$(dirname "$0")" && pwd)/$(basename "$0")"
+
+# glow.yml holds the real defaults; GLOW_STYLE is the per-invocation override.
+style="${GLOW_STYLE:-auto}"
+
+# Internal: render one file sized to the fzf preview pane. Not a public flag.
+if [[ "${1-}" == "--preview" ]]; then
+  width="${FZF_PREVIEW_COLUMNS:-80}"
+  (( width > 4 )) && width=$(( width - 2 ))
+  exec glow --style "$style" --width "$width" -- "$2"
+fi
+
+command -v glow >/dev/null 2>&1 || die "glow is not installed (brew install glow)"
+
+# Anything that is not a bare directory is glow's business: a file, a URL, a
+# flag, or several of them.
+if [[ $# -gt 1 ]] || { [[ $# -eq 1 ]] && [[ ! -d "$1" ]]; }; then
+  exec glow --pager --style "$style" "$@"
+fi
+
+dir="${1:-.}"
+cd "$dir"
+
+list_markdown() {
+  if command -v fd >/dev/null 2>&1; then
+    fd --type f --follow --hidden \
+       --exclude .git --exclude node_modules --exclude vendor \
+       --extension md --extension markdown
+  else
+    find . -type f \( -name '*.md' -o -name '*.markdown' \) \
+      -not -path '*/.git/*' -not -path '*/node_modules/*' -not -path '*/vendor/*' \
+      | sed 's|^\./||'
+  fi
+}
+
+files="$(list_markdown | sort)"
+[[ -n "$files" ]] || die "no markdown files under ${dir}"
+
+command -v fzf >/dev/null 2>&1 || die "fzf is not installed (brew install fzf)"
+
+# --expect reports the key on line 1 and the selection on line 2. Esc leaves
+# fzf with a non-zero status and no selection, which is a quit, not an error.
+choice="$(printf '%s\n' "$files" | fzf \
+  --prompt='markdown ❯ ' \
+  --header='enter: read · ctrl-e: edit · esc: quit' \
+  --height=90% \
+  --preview="'$self' --preview {}" \
+  --preview-window='right,62%,border-left' \
+  --expect=ctrl-e)" || exit 0
+
+key="$(printf '%s\n' "$choice" | sed -n 1p)"
+file="$(printf '%s\n' "$choice" | sed -n 2p)"
+[[ -n "$file" ]] || exit 0
+
+if [[ "$key" == "ctrl-e" ]]; then
+  exec "${EDITOR:-vim}" "$file"
+fi
+
+exec glow --pager --style "$style" -- "$file"

@@ -15,7 +15,7 @@ SYM_NOTE="ℹ"
 # --- Configuration ---
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 required_commands=(git zsh nvim tmux)
-optional_commands=(bat brew curl ddgr delta eza fd fnm rg vim fzf jq lazygit nnn kitty tldr uv zoxide)
+optional_commands=(bat brew curl ddgr delta eza fd fnm glow rg vim fzf jq lazygit nnn kitty tldr uv zoxide)
 
 missing_required=0
 missing_optional=0

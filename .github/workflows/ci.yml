@@ -20,7 +20,7 @@ jobs:
         run: |
           shellcheck --severity=warning \
             install uninstall doctor cleanup-deps \
-            scripts/gen-readme-links lib/*.sh
+            scripts/gen-readme-links bin/md lib/*.sh
 
       - name: zsh syntax
         run: |

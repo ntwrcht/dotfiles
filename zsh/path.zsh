@@ -1,6 +1,10 @@
 # PATH configuration
 export PATH=$HOME/bin:/usr/local/bin:$PATH
 
+# Commands shipped by this repo (bin/md, ...). Exported rather than
+# symlinked so nvim and tmux inherit them without a links.conf entry.
+export PATH="$DOTFILES/bin:$PATH"
+
 # JAVA Home
 export ANDROID_HOME=$HOME/Library/Android/sdk
 if [[ -d "$ANDROID_HOME" ]]; then
