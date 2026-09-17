@@ -10,7 +10,7 @@ jobs:
     name: Lint shell
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Install zsh
         run: sudo apt-get update && sudo apt-get install -y zsh
@@ -32,7 +32,7 @@ jobs:
     name: Dry-run install (macOS)
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       # Proves every manifest entry resolves and the installer runs end to end
       # on a machine that has never seen this repo. Nothing is written: every
@@ -52,7 +52,7 @@ jobs:
     name: Generated docs are current
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Regenerate and check for drift
         run: |
