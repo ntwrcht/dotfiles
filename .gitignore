@@ -190,3 +190,17 @@ Powerline_*.cache
 
 # SimpleContacts
 /bin/*-db
+
+# AI coding agents (generated state, local config, credentials)
+# To track a specific file, add a negation below, e.g.:
+#   !/.claude/settings.json
+/.claude/
+/.claude.json
+/.claude.json.backup
+/CLAUDE.local.md
+/.agent/
+/.agents/
+/.aider*
+/.codex/
+/.cursor/
+/.gemini/
