@@ -99,10 +99,10 @@ for_each_link unlink_file
 
 log_header "Additional Cleanup"
 
-if [[ -f "${HOME}/.zshrc-secrets" ]]; then
-  if confirm "Remove secrets file (~/.zshrc-secrets)?"; then
-    run "${HOME}/.zshrc-secrets"
-    log_success "Removed secrets file."
+if [[ -f "${HOME}/.zshrc.local" ]]; then
+  if confirm "Remove local overrides (~/.zshrc.local)?"; then
+    run "${HOME}/.zshrc.local"
+    log_success "Removed local overrides."
   fi
 fi
 

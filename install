@@ -134,11 +134,11 @@ link_file() {
   N_LINKED=$((N_LINKED + 1))
 }
 
-ensure_secrets_file() {
-  local source="${DOTFILES_DIR}/.zshrc-secrets.example"
-  local target="${HOME}/.zshrc-secrets"
+ensure_local_file() {
+  local source="${DOTFILES_DIR}/.zshrc.local.example"
+  local target="${HOME}/.zshrc.local"
 
-  log_header "Secrets Management"
+  log_header "Local Overrides"
 
   if [[ ! -e "$source" ]]; then
     log_error "Missing source: $source"
@@ -146,15 +146,60 @@ ensure_secrets_file() {
   fi
 
   if [[ -e "$target" ]]; then
-    log_success "Secrets file exists: ${CL_BOLD}${target}${CL_RESET}"
+    log_success "Local overrides exist: ${CL_BOLD}${target}${CL_RESET}"
     run chmod 600 "$target"
+  else
+    log_info "Creating local overrides: ${CL_BOLD}${target}${CL_RESET}"
+    run cp "$source" "$target"
+    run chmod 600 "$target"
+  fi
+
+  log_info "${SYM_SECRET} Secrets live in Keychain: ${CL_BOLD}secret add NAME${CL_RESET} (see README)"
+  if [[ -e "${HOME}/.zshrc-secrets" || -e "${HOME}/.config/openai.token" ]]; then
+    log_warn "Plaintext secrets still on disk (~/.zshrc-secrets, ~/.config/openai.token) — move them with \`secret add\`, then delete."
+  fi
+}
+
+# ~/.ssh/config stays local (private hosts; gcloud writes to it). It only has
+# to pull in the tracked defaults, and the Include must be line 1: one placed
+# after a Host block belongs to that block.
+ensure_ssh_include() {
+  local ssh_dir="${HOME}/.ssh"
+  local config="${ssh_dir}/config"
+  local include_line="Include ~/.ssh/dotfiles.conf"
+
+  log_header "SSH"
+
+  if [[ ! -d "$ssh_dir" ]]; then
+    log_info "Creating ${CL_BOLD}${ssh_dir}${CL_RESET} (700)"
+    run mkdir -m 700 "$ssh_dir"
+  fi
+
+  if [[ ! -e "$config" ]]; then
+    log_info "Creating ${CL_BOLD}${config}${CL_RESET} (600)"
+    if [[ "$DRY_RUN" -eq 0 ]]; then
+      printf '%s\n' "$include_line" > "$config"
+    fi
+    run chmod 600 "$config"
     return
   fi
 
-  log_info "${SYM_SECRET} Creating secrets file: ${CL_BOLD}${target}${CL_RESET}"
-  run cp "$source" "$target"
-  run chmod 600 "$target"
-  log_warn "Action Required: Edit ${CL_BOLD}${target}${CL_RESET} and replace placeholder values."
+  if [[ "$(head -n 1 "$config")" == "$include_line" ]]; then
+    log_success "SSH defaults included: ${CL_BOLD}${config}${CL_RESET}"
+    return
+  fi
+
+  ensure_backup_dir
+  log_info "${SYM_BACKUP} Backing up: ${CL_BOLD}${config}${CL_RESET}"
+  run cp -p "$config" "${BACKUP_DIR}/ssh_config"
+  log_info "Prepending ${CL_BOLD}${include_line}${CL_RESET} to ${config}"
+  if [[ "$DRY_RUN" -eq 0 ]]; then
+    local tmp
+    tmp="$(mktemp "${config}.XXXXXX")"
+    { printf '%s\n\n' "$include_line"; grep -vxF "$include_line" "$config" || true; } > "$tmp"
+    chmod 600 "$tmp"
+    mv "$tmp" "$config"
+  fi
 }
 
 ensure_nvim_python_provider() {
@@ -227,10 +272,12 @@ ensure_oh_my_zsh() {
   log_success "Oh My Zsh installed."
 }
 
+ensure_ssh_include
+
 log_header "Installing Dotfiles"
 for_each_link link_file
 
-ensure_secrets_file
+ensure_local_file
 ensure_nvim_python_provider
 ensure_oh_my_zsh
 

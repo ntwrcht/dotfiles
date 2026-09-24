@@ -48,7 +48,7 @@ The result: a new machine goes from factory state to a fully configured developm
 - **Declarative dependencies** — a single [`Brewfile`](./Brewfile) defines the entire toolchain, from Neovim to Nerd Fonts.
 - **Built-in diagnostics** — `make doctor` verifies that every tool is installed and every symlink points where it should.
 - **Clean removal** — `make uninstall` reverses everything the installer did.
-- **Secrets stay local** — API keys live in `~/.zshrc-secrets`, created from a template and never committed.
+- **Secrets never touch disk** — tokens, database URIs, and SSH passphrases live in the macOS Keychain, reached with `secret` and handed to one command at a time.
 
 ## Architecture Overview
 
@@ -141,7 +141,7 @@ Reads the [`Brewfile`](./Brewfile) and installs every tool at once — editor, t
 make install
 ```
 
-This links all config files into place, installs [Oh My Zsh](https://ohmyz.sh) with the [Powerlevel10k](https://github.com/romkatv/powerlevel10k) theme and Zsh plugins, sets up the Neovim Python provider, and creates your local secrets file.
+This links all config files into place, installs [Oh My Zsh](https://ohmyz.sh) with the [Powerlevel10k](https://github.com/romkatv/powerlevel10k) theme and Zsh plugins, sets up the Neovim Python provider, creates `~/.zshrc.local` for machine-specific settings, and adds the SSH defaults include to `~/.ssh/config`.
 
 Open a new terminal window when it finishes — everything is active.
 
@@ -194,13 +194,37 @@ $ make dry-run
 
 ### Managing Secrets
 
-API keys and tokens belong in `~/.zshrc-secrets` — a file that exists only on your machine and is never committed. The installer creates it from the [example template](./.zshrc-secrets.example) with `600` permissions. Fill in your values:
+Credentials live in the macOS login Keychain, never in a file, and are passed to one command at a time. `secret` manages them; every item is stored under `dotfiles/<NAME>`, so a search for `dotfiles/` in Keychain Access shows the same list.
+
+| Command | What it does |
+|---|---|
+| `secret add NAME` | Prompt for the value (hidden) and create or update it |
+| `secret get NAME` | Print the value |
+| `secret has NAME` | Exit 0 if it exists, 1 if not |
+| `secret ls` | List names — never values |
+| `secret rm [-f] NAME` | Delete, asking first unless `-f` |
+| `secret run NAME... -- CMD` | Run `CMD` with `NAME=value` in its environment only |
+
+`add` takes no value argument on purpose, so a secret never lands in shell history. A command typed with a leading space also stays out of history (`HIST_IGNORE_SPACE`).
+
+**Tools that need a token** get it through a one-line wrapper in [`zsh/secrets.zsh`](./zsh/secrets.zsh) — `jira` receives `JIRA_API_TOKEN`, `codex` receives `OPENAI_API_KEY`. Nothing is exported into the shell, so the wrappers apply only to interactive zsh; anything started from Neovim, tmux bindings, or scripts must call `secret run` itself.
+
+**MongoDB** — store one full URI per environment, then connect by name:
 
 ```bash
-# ~/.zshrc-secrets
-export JIRA_API_TOKEN=""
-export OPENAI_API_KEY=""
+secret add mongo/dev     # paste the URI at the prompt
+mdb dev                  # opens mongosh against it
+mdb                      # lists environments
 ```
+
+**SSH** — `~/.ssh/config` stays local, because it holds private hosts and `gcloud` writes to it. Its first line includes the tracked defaults in [`.ssh/dotfiles.conf`](./.ssh/dotfiles.conf) (`UseKeychain`, `AddKeysToAgent`), which store key passphrases in Keychain. Give each key a passphrase once, then load it:
+
+```bash
+ssh-keygen -p -f ~/.ssh/id_ed25519
+ssh-add --apple-use-keychain ~/.ssh/id_ed25519
+```
+
+Non-secret, machine-specific settings (e.g. `GOPRIVATE`) go in `~/.zshrc.local`, created from [the template](./.zshrc.local.example). The full design is in [docs/design/credential-management.md](./docs/design/credential-management.md).
 
 ### Health Checks
 

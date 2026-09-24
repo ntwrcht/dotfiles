@@ -49,17 +49,14 @@ source "$DOTFILES/zsh/aliases.zsh"
 # => Local Secrets & Overrides
 ##############################################################
 
-# Load public secrets from repo-managed file
-if [ -f "$HOME/.zshrc-secrets" ]; then
-  source "$HOME/.zshrc-secrets"
-fi
+# Secrets live in Keychain (bin/secret); these wrappers hand them to one
+# command at a time instead of exporting them into every shell.
+source "$DOTFILES/zsh/secrets.zsh"
 
-# Fallback for specific tokens
-if [ -z "${OPENAI_API_KEY:-}" ] && [ -f "$HOME/.config/openai.token" ]; then
-  export OPENAI_API_KEY="$(cat "$HOME/.config/openai.token")"
-fi
+# A command typed with a leading space stays out of history.
+setopt HIST_IGNORE_SPACE
 
-# Load machine-specific local overrides (ignored by Git)
+# Load machine-specific, non-secret overrides (ignored by Git)
 if [ -f "$HOME/.zshrc.local" ]; then
   source "$HOME/.zshrc.local"
 fi

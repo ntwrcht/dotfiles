@@ -1,0 +1,5 @@
+# Copy this file to ~/.zshrc.local for machine-specific, non-secret settings.
+# Never put tokens or passwords here — store them in Keychain instead:
+#   secret add NAME        (see bin/secret and zsh/secrets.zsh)
+
+export GOPRIVATE="your-org.gitlab.com,your-org.github.com"

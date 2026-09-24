@@ -135,12 +135,38 @@ else
   notices=$((notices + 1))
 fi
 
-if [[ -f "${HOME}/.zshrc-secrets" ]]; then
-  print_result "OK" "secrets" "exists"
+if [[ -x "${DOTFILES_DIR}/bin/secret" ]]; then
+  print_result "OK" "secret" "Keychain CLI ready"
 else
-  print_result "NOTE" "secrets" "missing (~/.zshrc-secrets)"
+  print_result "MISS" "secret" "bin/secret missing or not executable"
   notices=$((notices + 1))
 fi
+
+for plaintext in "${HOME}/.zshrc-secrets" "${HOME}/.config/openai.token"; do
+  if [[ -e "$plaintext" ]]; then
+    print_result "NOTE" "plaintext secret" "${plaintext/#$HOME/~} — move to Keychain (secret add), then delete"
+    notices=$((notices + 1))
+  fi
+done
+
+if [[ "$(head -n 1 "${HOME}/.ssh/config" 2>/dev/null)" == "Include ~/.ssh/dotfiles.conf" ]]; then
+  print_result "OK" "ssh config" "includes dotfiles.conf"
+else
+  print_result "NOTE" "ssh config" "line 1 is not the Include — run ./install"
+  notices=$((notices + 1))
+fi
+
+# A private key is any file with a matching .pub. If ssh-keygen can read it
+# with an empty passphrase, it has none.
+for pub in "${HOME}"/.ssh/*.pub; do
+  [[ -e "$pub" ]] || continue
+  key="${pub%.pub}"
+  [[ -f "$key" ]] || continue
+  if ssh-keygen -y -P '' -f "$key" >/dev/null 2>&1; then
+    print_result "NOTE" "ssh key" "${key/#$HOME/~} has no passphrase (ssh-keygen -p -f)"
+    notices=$((notices + 1))
+  fi
+done
 
 if [[ -d "${HOME}/.local/share/nvim/lazy/lazy.nvim" ]]; then
   print_result "OK" "lazy.nvim" "installed"
