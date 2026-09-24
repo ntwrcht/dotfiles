@@ -207,7 +207,7 @@ Credentials live in the macOS login Keychain, never in a file, and are passed to
 
 `add` takes no value argument on purpose, so a secret never lands in shell history. A command typed with a leading space also stays out of history (`HIST_IGNORE_SPACE`).
 
-**Tools that need a token** get it through a one-line wrapper in [`zsh/secrets.zsh`](./zsh/secrets.zsh) — `jira` receives `JIRA_API_TOKEN`, `codex` receives `OPENAI_API_KEY`. Nothing is exported into the shell, so the wrappers apply only to interactive zsh; anything started from Neovim, tmux bindings, or scripts must call `secret run` itself.
+**Tools that need a token** get it through a one-line wrapper in [`zsh/secrets.zsh`](./zsh/secrets.zsh) — `jira` receives `JIRA_API_TOKEN`, `codex` receives `OPENAI_API_KEY`. Nothing is exported into the shell, so the wrappers apply only to interactive zsh; anything started from Neovim, tmux bindings, or scripts must call `secret` itself — vim-ai does, through `g:vim_ai_token_load_fn` in `init.vim`.
 
 **MongoDB** — store one full URI per environment, then connect by name:
 

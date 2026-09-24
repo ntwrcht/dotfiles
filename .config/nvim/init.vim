@@ -363,6 +363,11 @@ nnoremap <silent> <C-\> :TmuxNavigatePrevious<cr>
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let g:vim_ai_roles_config_file = '~/roles.ini'
 
+" The key lives in Keychain (bin/secret), not in the environment or a file.
+" vim-ai evaluates this on each request, after $OPENAI_API_KEY and the token
+" file both come up empty. Absolute path, so it works outside a zsh launch.
+let g:vim_ai_token_load_fn = "system('" . expand('~/.dotfiles/bin/secret') . " get OPENAI_API_KEY')"
+
 let g:vim_ai_edit = {
 \  "options": {
 \    "model": "gpt-4.1-mini",
