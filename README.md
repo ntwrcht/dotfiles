@@ -207,7 +207,7 @@ Credentials live in the macOS login Keychain, never in a file, and are passed to
 
 `add` takes no value argument on purpose, so a secret never lands in shell history. A command typed with a leading space also stays out of history (`HIST_IGNORE_SPACE`).
 
-**Tools that need a token** get it through a one-line wrapper in [`zsh/secrets.zsh`](./zsh/secrets.zsh) — `jira` receives `JIRA_API_TOKEN`, `codex` receives `OPENAI_API_KEY`. Nothing is exported into the shell, so the wrappers apply only to interactive zsh; anything started from Neovim, tmux bindings, or scripts must call `secret` itself — vim-ai does, through `g:vim_ai_token_load_fn` in `init.vim`.
+**Tools that need a token** get it through a one-line wrapper in [`zsh/secrets.zsh`](./zsh/secrets.zsh) — `codex` receives `OPENAI_API_KEY`. Nothing is exported into the shell, so the wrappers apply only to interactive zsh; anything started from Neovim, tmux bindings, or scripts must call `secret` itself — vim-ai does, through `g:vim_ai_token_load_fn` in `init.vim`. `jira` needs no wrapper: jira-cli reads its token from Keychain itself (service `jira-cli`, account = your Jira login), so it works from any shell, script, or editor. To rotate it: `security add-generic-password -s jira-cli -a you@example.com -U -w`.
 
 **MongoDB** — store one full URI per environment, then connect by name:
 

@@ -2,7 +2,8 @@
 # so no token is exported into every shell. One line per tool; add with
 # `secret add NAME`. These exist only in interactive zsh — anything launched
 # from nvim, tmux bindings, or scripts must call `secret run` itself.
-jira()  { secret run JIRA_API_TOKEN -- jira "$@"; }
+# jira needs no wrapper: jira-cli reads its token from Keychain itself
+# (service "jira-cli", account = your Jira login), so it works everywhere.
 codex() { secret run OPENAI_API_KEY -- codex "$@"; }
 
 # `mdb <Tab>` completes stored environments one path segment at a time
