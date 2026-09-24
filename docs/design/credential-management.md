@@ -79,6 +79,10 @@ The wrappers exist only in interactive zsh. Tools launched from nvim, tmux bindi
 - **Line 1 of `~/.ssh/config` is `Include ~/.ssh/dotfiles.conf`.** The Include has to come first: an `Include` placed after a `Host` block belongs to that block. ssh takes the first value it finds for each option, and because the defaults above set nothing a host entry sets (`User`, `HostName`, `IdentityFile`), host entries are unaffected.
 - **Passphrases:** all three keys (`id_ed25519`, `id_rsa`, `google_compute_engine`) currently have **no passphrase**. For each one, run `ssh-keygen -p -f <key>` once, then `ssh-add --apple-use-keychain <key>` to store the passphrase in Keychain.
 
+### Managing hosts — `bin/sshm`
+
+Added after the first release. `sshm add/ls/show/rm/test/key` (and a bare `sshm` fzf picker) manage host entries in `~/.ssh/hosts`, a local file (600) that `.ssh/dotfiles.conf` includes **before** its `Host *` block, so each host's own settings win. `sshm` only writes `~/.ssh/hosts`; hosts in `~/.ssh/config` (gcloud's block) are listed and usable but `rm` refuses them. Each added host gets `IdentitiesOnly yes`, so ssh offers only that host's key. Completion lives in `zsh/ssh.zsh`.
+
 ## Changes to existing files
 
 | File | Change |

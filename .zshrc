@@ -41,6 +41,7 @@ source "$DOTFILES/zsh/theme.zsh"   # must precede fzf.zsh — it reads $CTP_*
 source "$DOTFILES/zsh/fzf.zsh"
 source "$DOTFILES/zsh/plugins.zsh"
 source "$DOTFILES/zsh/aliases.zsh"
+source "$DOTFILES/zsh/ssh.zsh"
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh

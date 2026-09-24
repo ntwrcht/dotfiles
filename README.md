@@ -224,6 +224,20 @@ ssh-keygen -p -f ~/.ssh/id_ed25519
 ssh-add --apple-use-keychain ~/.ssh/id_ed25519
 ```
 
+**SSH hosts** — `sshm` manages the list of servers so you never edit a config file by hand. Hosts it adds go in `~/.ssh/hosts` (local, never committed), which `dotfiles.conf` includes; hosts defined elsewhere, such as gcloud's block, are listed but left alone.
+
+| Command | What it does |
+|---|---|
+| `sshm` | Pick a host in fzf and connect |
+| `sshm ls` | List hosts: name, `user@host:port`, key, and where it is defined |
+| `sshm add [NAME HOST] [-u USER] [-p PORT] [-i KEY]` | Add a host — prompts for anything missing |
+| `sshm show NAME` | Print the settings ssh will actually use |
+| `sshm rm [-f] NAME` | Remove a host (keeps `~/.ssh/hosts.bak`) |
+| `sshm test NAME` | Check that key login works, without prompting |
+| `sshm key NAME` | Install your public key on the host (`ssh-copy-id`), ending password logins |
+
+After `sshm add shop-prod 34.87.12.5 -u deploy`, connect with `ssh shop-prod`; `scp`, `rsync`, and tunnels use the same name.
+
 Non-secret, machine-specific settings (e.g. `GOPRIVATE`) go in `~/.zshrc.local`, created from [the template](./.zshrc.local.example). The full design is in [docs/design/credential-management.md](./docs/design/credential-management.md).
 
 ### Health Checks

@@ -1,0 +1,193 @@
+#!/usr/bin/env bash
+# sshm — manage SSH hosts without editing config files by hand.
+#
+#   sshm                     pick a host in fzf and connect
+#   sshm ls                  list hosts: name, user@host:port, key, source
+#   sshm add [NAME HOST] [-u USER] [-p PORT] [-i KEY]
+#                            add a host; prompts for anything not given
+#   sshm show NAME           print the settings ssh will actually use
+#   sshm rm [-f] NAME        remove a host, asking first unless -f
+#   sshm test NAME           check key login works, without prompting
+#   sshm key NAME            install the host's key on it (ssh-copy-id)
+#
+# Hosts added here live in ~/.ssh/hosts: local only, never in this public
+# repo. .ssh/dotfiles.conf includes it ahead of the Host * defaults. Hosts
+# defined elsewhere (e.g. gcloud's block in ~/.ssh/config) are listed and
+# usable but never changed.
+set -euo pipefail
+
+HOSTS_FILE="${SSHM_HOSTS_FILE:-$HOME/.ssh/hosts}"
+CONFIG="$HOME/.ssh/config"
+
+die() { printf 'sshm: %s\n' "$1" >&2; exit 1; }
+
+usage() { sed -n '2,16p' "$0" | sed 's/^# \{0,1\}//'; }
+
+# Concrete host names in a file (patterns like * or ! are skipped).
+names_in() {
+  [[ -f "$1" ]] || return 0
+  awk 'tolower($1) == "host" { for (i = 2; i <= NF; i++) if ($i !~ /[*?!]/) print $i }' "$1"
+}
+
+# name<TAB>source for every known host, managed ones first.
+all_names() {
+  names_in "$HOSTS_FILE" | sed 's/$/\thosts/'
+  names_in "$CONFIG" | sed 's/$/\tconfig/'
+}
+
+exists() { all_names | cut -f1 | grep -qxF "$1"; }
+managed() { names_in "$HOSTS_FILE" | grep -qxF "$1"; }
+
+# Effective value of one ssh option for NAME, as ssh itself resolves it.
+effective() { ssh -G "$1" 2>/dev/null | awk -v k="$2" '$1 == k { $1 = ""; sub(/^ /, ""); print }'; }
+
+key_of() {
+  local keys
+  keys="$(effective "$1" identityfile)"
+  # With no IdentityFile set, ssh lists all of its defaults.
+  if [[ "$(grep -c . <<<"$keys")" -gt 1 ]]; then echo "default"; else echo "${keys/#$HOME/~}"; fi
+}
+
+check_name() {
+  [[ "${1-}" =~ ^[A-Za-z0-9._-]+$ ]] || die "invalid name: '${1-}' (use A-Z a-z 0-9 . _ -)"
+}
+
+cmd_names() { all_names | cut -f1; }
+
+cmd_ls() {
+  local name src user port
+  {
+    printf 'NAME\tTARGET\tKEY\tSOURCE\n'
+    all_names | while IFS=$'\t' read -r name src; do
+      user="$(effective "$name" user)"
+      port="$(effective "$name" port)"
+      printf '%s\t%s@%s%s\t%s\t%s\n' "$name" "$user" "$(effective "$name" hostname)" \
+        "$([[ "$port" == 22 ]] || printf ':%s' "$port")" "$(key_of "$name")" "$src"
+    done
+  } | column -t -s $'\t'
+}
+
+cmd_show() {
+  [[ $# -eq 1 ]] || die "usage: sshm show NAME"
+  exists "$1" || die "no such host: $1 (see sshm ls)"
+  printf 'source         %s\n' "$(managed "$1" && echo "$HOSTS_FILE" || echo "$CONFIG")"
+  ssh -G "$1" 2>/dev/null \
+    | grep -E '^(hostname|user|port|identityfile|identitiesonly|proxyjump|usekeychain|addkeystoagent) ' \
+    | awk '{ printf "%-14s %s\n", $1, $2 }'
+}
+
+cmd_add() {
+  local name="" host="" user="" port="" key="" arg
+  local positional=()
+  while [[ $# -gt 0 ]]; do
+    arg="$1"; shift
+    case "$arg" in
+      -u) user="${1-}"; shift ;;
+      -p) port="${1-}"; shift ;;
+      -i) key="${1-}"; shift ;;
+      -*) die "unknown option: $arg" ;;
+      *) positional+=("$arg") ;;
+    esac
+  done
+  [[ ${#positional[@]} -le 2 ]] || die "usage: sshm add [NAME HOST] [-u USER] [-p PORT] [-i KEY]"
+  name="${positional[0]-}"
+  host="${positional[1]-}"
+
+  # A literal ~ on purpose: it is written into the config, and ssh expands it.
+  # shellcheck disable=SC2088
+  local default_key="~/.ssh/id_ed25519"
+  if [[ -z "$name" ]]; then read -r -p "Name (what you'll type after ssh): " name; fi
+  check_name "$name"
+  exists "$name" && die "'$name' already exists (sshm show $name)"
+  if [[ -z "$host" ]]; then read -r -p "HostName (IP or DNS): " host; fi
+  [[ -n "$host" ]] || die "HostName is required"
+  if [[ ${#positional[@]} -lt 2 ]]; then
+    [[ -n "$user" ]] || read -r -p "User [$USER]: " user
+    [[ -n "$port" ]] || read -r -p "Port [22]: " port
+    [[ -n "$key" ]] || read -r -p "Key [$default_key]: " key
+  fi
+  user="${user:-$USER}"
+  port="${port:-22}"
+  key="${key:-$default_key}"
+  [[ "$port" =~ ^[0-9]+$ ]] || die "port must be a number: $port"
+  [[ -f "${key/#\~/$HOME}" ]] || die "key not found: $key"
+
+  if [[ ! -f "$HOSTS_FILE" ]]; then
+    (umask 077; : > "$HOSTS_FILE")
+  fi
+  {
+    [[ -s "$HOSTS_FILE" ]] && printf '\n'
+    printf 'Host %s\n  HostName %s\n  User %s\n' "$name" "$host" "$user"
+    [[ "$port" == 22 ]] || printf '  Port %s\n' "$port"
+    printf '  IdentityFile %s\n  IdentitiesOnly yes\n' "$key"
+  } >> "$HOSTS_FILE"
+  printf 'sshm: added %s — connect with: ssh %s  (check first: sshm test %s)\n' "$name" "$name" "$name" >&2
+}
+
+cmd_rm() {
+  local force=0
+  if [[ "${1-}" == "-f" ]]; then force=1; shift; fi
+  [[ $# -eq 1 ]] || die "usage: sshm rm [-f] NAME"
+  exists "$1" || die "no such host: $1"
+  managed "$1" || die "'$1' is defined in $CONFIG, not by sshm — remove it there (gcloud: gcloud compute config-ssh --remove)"
+  if [[ "$force" -eq 0 ]]; then
+    local reply
+    read -r -p "Remove $1 ($(effective "$1" user)@$(effective "$1" hostname))? [y/N] " reply
+    [[ "$reply" =~ ^[yY]$ ]] || { printf 'sshm: kept %s\n' "$1" >&2; exit 1; }
+  fi
+  cp -p "$HOSTS_FILE" "$HOSTS_FILE.bak"
+  local tmp
+  tmp="$(mktemp "$HOSTS_FILE.XXXXXX")"
+  # Drop from "Host NAME" up to the next Host/Match line, then squeeze blanks.
+  awk -v n="$1" '
+    tolower($1) == "host" || tolower($1) == "match" { skip = (tolower($1) == "host" && NF == 2 && $2 == n) }
+    !skip' "$HOSTS_FILE" | cat -s | sed -e '/./,$!d' > "$tmp"
+  chmod 600 "$tmp"
+  mv "$tmp" "$HOSTS_FILE"
+  printf 'sshm: removed %s (previous file: %s.bak)\n' "$1" "$HOSTS_FILE" >&2
+}
+
+cmd_test() {
+  [[ $# -eq 1 ]] || die "usage: sshm test NAME"
+  exists "$1" || die "no such host: $1"
+  if ssh -o BatchMode=yes -o ConnectTimeout=5 "$1" true 2>/dev/null; then
+    printf 'sshm: %s OK — key login works\n' "$1"
+  else
+    die "$1 FAILED — unreachable, or key login not set up (try: sshm key $1)"
+  fi
+}
+
+cmd_key() {
+  [[ $# -eq 1 ]] || die "usage: sshm key NAME"
+  exists "$1" || die "no such host: $1"
+  local key
+  key="$(key_of "$1")"
+  [[ "$key" == "default" ]] && key="$HOME/.ssh/id_ed25519"
+  key="${key/#\~/$HOME}"
+  [[ -f "$key.pub" ]] || die "public key not found: $key.pub"
+  # Asks for the server password once, then key login takes over.
+  exec ssh-copy-id -i "$key.pub" "$1"
+}
+
+cmd_pick() {
+  command -v fzf >/dev/null 2>&1 || { cmd_ls; exit 0; }
+  local line
+  line="$(cmd_ls | fzf --header-lines=1 --prompt='ssh> ' \
+    --preview "$0 show {1}" --preview-window=down,40%)" || exit 0
+  exec ssh "${line%% *}"
+}
+
+sub="${1-}"
+[[ $# -gt 0 ]] && shift
+case "$sub" in
+  "")    cmd_pick ;;
+  ls)    cmd_ls "$@" ;;
+  add)   cmd_add "$@" ;;
+  show)  cmd_show "$@" ;;
+  rm)    cmd_rm "$@" ;;
+  test)  cmd_test "$@" ;;
+  key)   cmd_key "$@" ;;
+  names) cmd_names ;;   # internal: for zsh completion
+  -h|--help|help) usage ;;
+  *) die "unknown command: $sub (see sshm -h)" ;;
+esac
