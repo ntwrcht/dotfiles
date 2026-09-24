@@ -199,6 +199,7 @@ Credentials live in the macOS login Keychain, never in a file, and are passed to
 | Command | What it does |
 |---|---|
 | `secret add NAME` | Prompt for the value (hidden) and create or update it |
+| `pbpaste \| secret add NAME` | Same, taking the value from the clipboard |
 | `secret get NAME` | Print the value |
 | `secret has NAME` | Exit 0 if it exists, 1 if not |
 | `secret ls` | List names — never values |

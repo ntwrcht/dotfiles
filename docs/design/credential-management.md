@@ -30,7 +30,7 @@ Keep every credential (API tokens, MongoDB URIs, SSH key passphrases) in the mac
 
 | Command | Result | Underlying call |
 |---|---|---|
-| `secret add NAME` | Prompts for the value twice with no echo and creates or updates the item | `security add-generic-password -a $USER -s dotfiles/NAME -l dotfiles/NAME -U -w` (`-w` last, so `security` prompts. The value never appears in argv or history) |
+| `secret add NAME` | Prompts for the value twice with no echo (or reads one line from stdin when piped) and creates or updates the item | `add-generic-password … -U -w "VALUE"` sent to `security -i` on stdin, so the value never appears in argv or history. **Not** `security`'s own `-w` prompt: it silently truncates input to 128 characters, which cut a 192-character Atlassian token and broke Jira auth. `security -i` caps a line near 4 KB, so values over 3800 characters are refused |
 | `secret get NAME` | Prints the value to stdout. Exits 1 with a message on stderr if missing | `security find-generic-password -a $USER -s dotfiles/NAME -w` |
 | `secret has NAME` | Silent. Exits 0 if the item exists, 1 if not | same call without `-w` (security exits 44 when missing) |
 | `secret ls` | Prints names only, sorted, one per line. Never prints values | `security dump-keychain` → filter `"svce"<blob>="dotfiles/…"` |
