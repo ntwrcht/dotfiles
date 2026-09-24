@@ -7,11 +7,51 @@
 # Add an environment with `secret add mongo/dev` and paste the full URI.
 # The URI is passed to mongosh as an argument, so it is visible in `ps` while
 # mongosh runs; mongosh itself redacts credentials from its history and logs.
+#
+# mongodb+srv:// URIs are resolved here, with the macOS resolver, into a plain
+# mongodb:// seed list. mongosh's bundled Node rejects SRV answers from some
+# DNS servers (e.g. an iPhone hotspot: "querySrv EBADRESP") that dig and the
+# system resolver read fine. If the lookup fails, the URI is used unchanged.
 set -euo pipefail
 
 die() { printf 'mdb: %s\n' "$1" >&2; exit 1; }
 
 secret="$(dirname "$0")/secret"
+
+# srv_to_seedlist URI — print the equivalent mongodb:// URI, or fail.
+# Follows the SRV spec: hosts from _mongodb._tcp.HOST, options from the TXT
+# record (only authSource/replicaSet/loadBalanced), tls on by default, and
+# options already in the URI win over TXT ones.
+srv_to_seedlist() {
+  local uri="$1" rest creds="" host path="" query="" hosts txt opt key merged
+  rest="${uri#mongodb+srv://}"
+  if [[ "$rest" == *@* ]]; then
+    creds="${rest%@*}@"
+    rest="${rest##*@}"
+  fi
+  host="${rest%%[/?]*}"
+  rest="${rest#"$host"}"
+  if [[ "$rest" == *\?* ]]; then
+    query="${rest#*\?}"
+    rest="${rest%%\?*}"
+  fi
+  path="${rest#/}"
+
+  hosts="$(dig +short +time=3 +tries=2 SRV "_mongodb._tcp.$host" 2>/dev/null \
+    | awk 'NF == 4 { sub(/\.$/, "", $4); printf "%s%s:%s", sep, $4, $3; sep = "," }')"
+  [[ -n "$hosts" ]] || return 1
+  txt="$(dig +short +time=3 +tries=2 TXT "$host" 2>/dev/null | tr -d '"' | head -n 1)"
+
+  merged="$query"
+  for opt in ${txt//&/ } tls=true; do
+    key="${opt%%=*}"
+    case "$key" in authSource|replicaSet|loadBalanced|tls) ;; *) continue ;; esac
+    # An option the URI already sets (tls or its alias ssl) is left alone.
+    [[ "&$merged" =~ \&($key|${key/tls/ssl})= ]] && continue
+    merged="${merged:+$merged&}$opt"
+  done
+  printf 'mongodb://%s%s/%s?%s\n' "$creds" "$hosts" "$path" "$merged"
+}
 
 if [[ $# -eq 0 ]]; then
   "$secret" ls | sed -n 's|^mongo/||p'
@@ -19,7 +59,7 @@ if [[ $# -eq 0 ]]; then
 fi
 
 case "$1" in
-  -h|--help) sed -n '2,9p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+  -h|--help) sed -n '2,14p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
 esac
 
 command -v mongosh >/dev/null 2>&1 || die "mongosh is not installed (brew install mongosh)"
@@ -27,4 +67,7 @@ command -v mongosh >/dev/null 2>&1 || die "mongosh is not installed (brew instal
 env_name="$1"
 shift
 uri="$("$secret" get "mongo/$env_name")" || die "no URI for '$env_name' — run: secret add mongo/$env_name"
+if [[ "$uri" == mongodb+srv://* ]]; then
+  uri="$(srv_to_seedlist "$uri")" || uri="$("$secret" get "mongo/$env_name")"
+fi
 exec mongosh "$uri" "$@"

@@ -47,6 +47,8 @@ I verified the add/get/has/ls/rm calls on this Mac (macOS 27.2) with a throwaway
 | `mdb ENV [MONGOSH_ARGS]` | `exec mongosh "$(secret get mongo/ENV)" "$@"` |
 | `mdb` | Lists available environments (`secret ls` filtered to `mongo/`) |
 
+`mdb` resolves `mongodb+srv://` URIs itself (dig SRV + TXT, `tls=true`, URI options win) and hands mongosh a plain `mongodb://` seed list: mongosh's bundled Node rejects SRV answers from some DNS servers (`querySrv EBADRESP` on an iPhone hotspot) that the macOS resolver reads fine. If the lookup fails, the stored URI is used unchanged.
+
 MongoDB Compass needs nothing extra, because it already stores saved-connection passwords in Keychain.
 
 ## Shell wiring — `zsh/secrets.zsh`
