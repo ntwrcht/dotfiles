@@ -57,7 +57,7 @@ This file is sourced from the "Local Secrets & Overrides" block in `.zshrc`. It 
 |---|---|
 | `codex` | `OPENAI_API_KEY` |
 
-`jira` was dropped from this table after release: jira-cli reads its token from Keychain natively (service `jira-cli`, account = the Jira login), which also covers non-interactive callers. Each wrapper is one line of the form `jira() { secret run JIRA_API_TOKEN -- jira "$@"; }`. `bin/secret` is an external process and cannot see zsh functions, so this doesn't recurse. Adding a tool means adding one line.
+`jira` was dropped from this table after release: jira-cli reads its token from Keychain natively (service `jira-cli`, account = the Jira login), which also covers non-interactive callers. `secret add/rm JIRA_API_TOKEN` mirrors the value into that item (see `mirror_of` in `bin/secret`), so `secret` remains the one interface. Each wrapper is one line of the form `jira() { secret run JIRA_API_TOKEN -- jira "$@"; }`. `bin/secret` is an external process and cannot see zsh functions, so this doesn't recurse. Adding a tool means adding one line.
 
 The wrappers exist only in interactive zsh. Tools launched from nvim, tmux bindings, launchd, or scripts no longer get these tokens unless they call `secret run` themselves. No such consumer exists today; the README says so.
 
