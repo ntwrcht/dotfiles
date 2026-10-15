@@ -222,7 +222,7 @@ ensure_nvim_python_provider() {
   done
 
   if [[ -z "$python3_bin" ]]; then
-    log_warn "python3 not found — skipping Neovim Python provider. Run \`make deps\` first."
+    log_warn "python3 not found — skipping Neovim Python provider. Run \`make runtimes\` first."
     return
   fi
 

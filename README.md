@@ -42,7 +42,7 @@ The result: a new machine goes from factory state to a fully configured developm
 
 ## Key Features
 
-- **One-command setup** — `make deps && make install` takes a fresh Mac to a complete environment.
+- **One-command setup** — `make deps runtimes install` takes a fresh Mac to a complete environment.
 - **Safe by design** — existing files are backed up to `~/.dotfiles-backup/<timestamp>` before anything is replaced, and `make dry-run` previews every change without touching your system.
 - **Idempotent installer** — re-run it any time; links already in place are detected and skipped.
 - **Declarative dependencies** — a single [`Brewfile`](./Brewfile) defines the entire toolchain, from Neovim to Nerd Fonts.
@@ -131,9 +131,10 @@ cd ~/.dotfiles
 
 ```bash
 make deps
+make runtimes
 ```
 
-Reads the [`Brewfile`](./Brewfile) and installs every tool at once — editor, terminal, shell utilities, fonts, and Git tooling.
+`make deps` reads the [`Brewfile`](./Brewfile) and installs every tool at once — editor, terminal, shell utilities, fonts, Git tooling, and the [fnm](https://github.com/Schniz/fnm) and [uv](https://docs.astral.sh/uv/) version managers. `make runtimes` then uses them to install the latest Node LTS and Python 3.12 (override with `make runtimes PYTHON_VERSION=3.13`).
 
 **3. Apply the configurations**
 
@@ -160,6 +161,7 @@ Run these from inside `~/.dotfiles`:
 | `make uninstall` | Remove all configs applied by this repo |
 | `make doctor` | Verify tools are installed and links are correct |
 | `make deps` | Install or update all tools via Homebrew |
+| `make runtimes` | Install Node LTS (fnm) and Python (uv) |
 | `make docs` | Regenerate the generated sections of this README |
 | `make cleanup` | Preview Homebrew packages that can be removed |
 | `make cleanup-apply` | Remove the packages shown by `cleanup` |

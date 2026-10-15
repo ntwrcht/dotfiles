@@ -1,5 +1,7 @@
 .DEFAULT_GOAL := help
 
+PYTHON_VERSION ?= 3.12
+
 .PHONY: help
 help: ## Show this help message
 	@printf "\033[1;36m🩺 Dotfiles Management\033[0m\n\n"
@@ -25,6 +27,14 @@ doctor: ## Run diagnostic check on tools and environment
 .PHONY: deps
 deps: ## Install Homebrew dependencies from Brewfile
 	brew bundle
+
+.PHONY: runtimes
+runtimes: ## Install Node (LTS via fnm) and Python (via uv)
+	@command -v fnm >/dev/null || { echo "fnm not found — run \`make deps\` first"; exit 1; }
+	@command -v uv >/dev/null || { echo "uv not found — run \`make deps\` first"; exit 1; }
+	fnm install --lts
+	fnm default lts-latest
+	uv python install --default $(PYTHON_VERSION)
 
 .PHONY: docs
 docs: ## Regenerate the generated sections of README.md
