@@ -35,5 +35,5 @@ export GOCACHE=$HOME/.cache
 export GO111MODULE=on
 export PATH=$PATH:$GOPATH/bin
 
-# CLAUDE PATH
+# User-local CLIs (Claude Code, Postman CLI)
 export PATH="$HOME/.local/bin:$PATH"
