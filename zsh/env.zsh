@@ -8,8 +8,6 @@ DISABLE_AUTO_UPDATE="true"
 DISABLE_LS_COLORS="true"
 DISABLE_AUTO_TITLE="true"
 DISABLE_UNTRACKED_FILES_DIRTY="true"
-NVM_LAZY_LOAD=true
-NVM_COMPLETION=true
 
 # Global Environment Variables
 export MANPATH="/usr/local/man:$MANPATH"
