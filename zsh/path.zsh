@@ -37,3 +37,9 @@ export PATH=$PATH:$GOPATH/bin
 
 # User-local CLIs (Claude Code, Postman CLI)
 export PATH="$HOME/.local/bin:$PATH"
+
+# MySQL client (keg-only in Homebrew, so its bin is not linked by default)
+for _mysql_bin in /opt/homebrew/opt/mysql-client/bin /usr/local/opt/mysql-client/bin; do
+  [[ -d "$_mysql_bin" ]] && export PATH="$_mysql_bin:$PATH" && break
+done
+unset _mysql_bin
