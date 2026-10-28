@@ -45,9 +45,9 @@ require("lazy").setup({
   -- Core & UI
   { "catppuccin/nvim", name = "catppuccin", priority = 1000 },
   { "nvim-lualine/lualine.nvim", dependencies = { "nvim-tree/nvim-web-devicons" } },
-  -- Pinned to `master`: the `main` branch is the incompatible rewrite and does
-  -- not provide `nvim-treesitter.configs`, which the setup call below uses.
-  { "nvim-treesitter/nvim-treesitter", build = ":TSUpdate", branch = "master" },
+  -- `main` is the branch that supports Neovim 0.12; `master` is frozen at 0.11.
+  -- It does not lazy-load, and building parsers needs the tree-sitter CLI.
+  { "nvim-treesitter/nvim-treesitter", build = ":TSUpdate", branch = "main", lazy = false },
   { "lewis6991/gitsigns.nvim" },
   { "lukas-reineke/indent-blankline.nvim", main = "ibl", opts = {} },
   { "echasnovski/mini.icons", version = false },
@@ -147,13 +147,15 @@ require("lazy").setup({
 })
 
 -- Treesitter Configuration
-local status_ok, ts = pcall(require, "nvim-treesitter.configs")
+local status_ok, ts = pcall(require, "nvim-treesitter")
 if status_ok then
-  ts.setup {
-    ensure_installed = { "lua", "vim", "vimdoc", "javascript", "typescript", "tsx", "go", "python", "json", "yaml", "markdown", "bash", "css", "html", "graphql" },
-    highlight = { enable = true },
-  }
+  ts.install { "lua", "vim", "vimdoc", "javascript", "typescript", "tsx", "go", "python", "json", "yaml", "markdown", "bash", "css", "html", "graphql" }
 end
+
+-- Turn on treesitter highlighting for any filetype that has a parser installed.
+vim.api.nvim_create_autocmd("FileType", {
+  callback = function() pcall(vim.treesitter.start) end,
+})
 
 -- Lualine Configuration
 local lualine_status_ok, lualine = pcall(require, "lualine")
