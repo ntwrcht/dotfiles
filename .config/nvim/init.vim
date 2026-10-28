@@ -130,7 +130,6 @@ require("lazy").setup({
   { "editorconfig/editorconfig-vim" },
   { "mg979/vim-visual-multi" },
   { "christoomey/vim-tmux-navigator" },
-  { "instant-markdown/vim-instant-markdown", ft = "markdown" },
   { "tpope/vim-fugitive" },
 
   -- Tools
@@ -161,7 +160,7 @@ local lualine_status_ok, lualine = pcall(require, "lualine")
 if lualine_status_ok then
   lualine.setup {
     options = {
-      theme = 'catppuccin',
+      theme = 'catppuccin-mocha',
       section_separators = '',
       component_separators = '|',
       icons_enabled = true,
@@ -306,8 +305,6 @@ nnoremap <silent> <leader>k :FloatermNew --height=0.9 --width=0.9 claude<cr>
 " `md` is $DOTFILES/bin/md, put on PATH by zsh/path.zsh, so this floaterm and
 " the shell share one reader. Called with a file it renders it; called bare it
 " opens the fzf picker over every markdown file under the cwd.
-"
-" vim-instant-markdown covers the browser preview; this is the terminal one.
 function! s:Glow(target) abort
   let l:file = empty(a:target) ? expand('%:p') : fnamemodify(a:target, ':p')
 
