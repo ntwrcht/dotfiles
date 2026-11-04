@@ -6,15 +6,15 @@
 # (service "jira-cli", account = your Jira login), so it works everywhere.
 codex() { secret run OPENAI_API_KEY -- codex "$@"; }
 
-# `mdb <Tab>` completes stored environments one path segment at a time
-# (mongo/shop/prod → `shop/` then `prod`); later words fall back to files.
-_mdb() {
+# `mdb <Tab>` and `mydb <Tab>` complete stored environments one path segment
+# at a time (mongo/shop/prod → `shop/` then `prod`); later words use files.
+_db_envs() {
   if (( CURRENT == 2 )); then
     local -a envs
-    envs=(${(f)"$(mdb 2>/dev/null)"})
+    envs=(${(f)"$($words[1] 2>/dev/null)"})
     _multi_parts / envs
   else
     _default
   fi
 }
-compdef _mdb mdb
+compdef _db_envs mdb mydb

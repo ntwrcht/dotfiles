@@ -220,6 +220,15 @@ mdb dev                  # opens mongosh against it
 mdb                      # lists environments
 ```
 
+**MySQL** works the same way with `mydb`. The URI is `mysql://user:pass@host[:port][/db][?option=value&...]`; percent-encode special characters in the user and password, and each query option becomes a mysql client option such as `ssl-mode=REQUIRED`. `mydb` hands the settings to mysql through an option file on a pipe, so the password never shows in `ps`.
+
+```bash
+secret add mysql/dev     # paste the URI at the prompt
+mydb dev                 # opens mysql against it
+mydb dev -e 'show tables'
+mydb                     # lists environments
+```
+
 **SSH** — `~/.ssh/config` stays local, because it holds private hosts and `gcloud` writes to it. Its first line includes the tracked defaults in [`.ssh/dotfiles.conf`](./.ssh/dotfiles.conf) (`UseKeychain`, `AddKeysToAgent`), which store key passphrases in Keychain. Give each key a passphrase once, then load it:
 
 ```bash

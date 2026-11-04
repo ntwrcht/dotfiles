@@ -1,0 +1,83 @@
+#!/usr/bin/env bash
+# mydb — open the mysql client against a named environment, URI from Keychain.
+#
+#   mydb                    list environments (secret names mysql/*)
+#   mydb ENV [MYSQL_ARGS]   connect with the URI stored as `mysql/ENV`
+#
+# Add an environment with `secret add mysql/dev` and paste a URI such as
+#   mysql://user:pass@host:3306/dbname?ssl-mode=REQUIRED
+# Percent-encode special characters in the user and password. Each query
+# option becomes a mysql client option (ssl-mode, ssl-ca, default-character-set).
+#
+# The settings reach mysql through an option file on a pipe, so the password
+# never appears in argv, `ps`, or the environment.
+set -euo pipefail
+
+die() { printf 'mydb: %s\n' "$1" >&2; exit 1; }
+
+secret="$(dirname "$0")/secret"
+
+# Decode %XX escapes in a URI part.
+urldecode() { local s="${1//+/%2B}"; printf '%b' "${s//%/\\x}"; }
+
+# Quote a value for a MySQL option file: wrap in "" and escape \ and ".
+optquote() { local v="${1//\\/\\\\}"; printf '"%s"' "${v//\"/\\\"}"; }
+
+# uri_to_options URI — print a [client] option file for the URI, or fail.
+uri_to_options() {
+  local uri="$1" rest creds="" user="" pass="" hostport host port="" db="" query="" opt
+  [[ "$uri" == mysql://* ]] || return 1
+  rest="${uri#mysql://}"
+  if [[ "$rest" == *@* ]]; then
+    creds="${rest%@*}"
+    rest="${rest##*@}"
+    user="${creds%%:*}"
+    [[ "$creds" == *:* ]] && pass="${creds#*:}"
+  fi
+  if [[ "$rest" == *\?* ]]; then
+    query="${rest#*\?}"
+    rest="${rest%%\?*}"
+  fi
+  hostport="${rest%%/*}"
+  [[ "$rest" == */* ]] && db="${rest#*/}"
+  host="$hostport"
+  if [[ "$hostport" == *:* ]]; then
+    host="${hostport%:*}"
+    port="${hostport##*:}"
+  fi
+  [[ -n "$host" ]] || return 1
+
+  printf '[client]\n'
+  printf 'host=%s\n' "$(optquote "$host")"
+  [[ -n "$port" ]] && printf 'port=%s\n' "$port"
+  [[ -n "$user" ]] && printf 'user=%s\n' "$(optquote "$(urldecode "$user")")"
+  [[ -n "$pass" ]] && printf 'password=%s\n' "$(optquote "$(urldecode "$pass")")"
+  [[ -n "$db" ]] && printf 'database=%s\n' "$(optquote "$(urldecode "$db")")"
+  # A flag with no value (?compress) is written as a bare option name.
+  for opt in ${query//&/ }; do
+    if [[ "$opt" == *=* ]]; then
+      printf '%s=%s\n' "${opt%%=*}" "$(optquote "$(urldecode "${opt#*=}")")"
+    else
+      printf '%s\n' "$opt"
+    fi
+  done
+}
+
+if [[ $# -eq 0 ]]; then
+  "$secret" ls | sed -n 's|^mysql/||p'
+  exit 0
+fi
+
+case "$1" in
+  -h|--help) sed -n '2,13p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+esac
+
+command -v mysql >/dev/null 2>&1 || die "mysql is not installed (brew install mysql-client)"
+
+env_name="$1"
+shift
+uri="$("$secret" get "mysql/$env_name")" || die "no URI for '$env_name' — run: secret add mysql/$env_name"
+options="$(uri_to_options "$uri")" || die "mysql/$env_name is not a mysql://user:pass@host[:port][/db] URI"
+
+# --defaults-extra-file must come first; the pipe stays open across exec.
+exec mysql --defaults-extra-file=<(printf '%s\n' "$options") "$@"
