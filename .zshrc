@@ -13,10 +13,10 @@ fi
 ##############################################################
 # => ZSH Startup with Tmux
 ##############################################################
-# `tmux` with no arguments means `new-session` -- it never attaches. That made
-# every terminal spawn ANOTHER session, and left the `|| tmux new` fallback
-# unreachable. `new-session -A -D -s main` attaches if `main` exists, creates it
-# otherwise, and detaches any other client.
+# Each terminal gets its own new tmux session with its own windows; the first
+# is named `main`. @kitty_tab tags it so bin/tmux-reap (run by .tmux.conf when
+# a tab closes or detaches) kills it once no terminal shows it.
+# Never attach with -D: it detached the other kitty tab and closed it.
 #
 # The guards below keep tmux out of editor and IDE terminals, which are
 # interactive (so .zshrc runs) but do not set $TMUX. $VIM in particular matters
@@ -30,7 +30,10 @@ if command -v tmux >/dev/null 2>&1 \
   && [ "${TERMINAL_EMULATOR:-}" != "JetBrains-JediTerm" ] \
   && [ -z "${VSCODE_RESOLVING_ENVIRONMENT:-}" ] \
   && [ -z "${SSH_CONNECTION:-}" ]; then
-    exec tmux new-session -A -D -s main
+    # Name the session `main` only when no `main` exists yet.
+    _tmux_name=()
+    tmux has-session -t '=main' 2>/dev/null || _tmux_name=(-s main)
+    exec tmux new-session "${_tmux_name[@]}" \; set-option @kitty_tab 1
 fi
 ##############################################################
 

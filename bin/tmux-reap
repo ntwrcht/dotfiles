@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# tmux-reap — kill tab sessions that no terminal is showing any more.
+#
+# .zshrc gives each kitty tab its own session and tags it with @kitty_tab.
+# .tmux.conf runs this when a client detaches or closes, so closing a tab ends
+# its session. Sessions without the tag (made by hand or by scripts) are kept.
+set -uo pipefail
+
+# Print the id of every tagged session with no attached client, then kill each.
+tmux list-sessions -F '#{session_attached} #{@kitty_tab} #{session_id}' 2>/dev/null \
+  | awk '$1 == 0 && $2 == 1 { print $3 }' \
+  | while read -r id; do
+      tmux kill-session -t "$id" 2>/dev/null
+    done
+exit 0
