@@ -18,3 +18,48 @@ _db_envs() {
   fi
 }
 compdef _db_envs mdb mydb
+
+# `secret <Tab>` completes subcommands; get, has, rm and run then complete
+# stored names from `secret ls`, and `run ... -- <Tab>` completes a command.
+_secret() {
+  if (( CURRENT == 2 )); then
+    local -a subs=(
+      'add:create or update a secret'
+      'get:print a value'
+      'has:exit 0 if a secret exists'
+      'ls:list stored names'
+      'rm:delete a secret'
+      'run:run a command with secrets in its env'
+    )
+    _describe -t commands 'secret command' subs
+    return
+  fi
+  # After `run NAME... --`, complete the command as if typed on its own.
+  if [[ $words[2] == run ]]; then
+    local sep=${words[(i)--]}
+    if (( sep < CURRENT )); then
+      words=("${(@)words[sep+1,-1]}")
+      (( CURRENT -= sep ))
+      _normal
+      return
+    fi
+  fi
+  local -a names=(${(f)"$(secret ls 2>/dev/null)"})
+  case $words[2] in
+    get|has)
+      (( CURRENT == 3 )) && _describe -t names 'secret' names ;;
+    rm)
+      if (( CURRENT == 3 )); then
+        compadd -- -f
+        _describe -t names 'secret' names
+      elif (( CURRENT == 4 )) && [[ $words[3] == -f ]]; then
+        _describe -t names 'secret' names
+      fi ;;
+    run)
+      # Offer env-var-safe names not already listed, plus `--` after the first.
+      names=(${${names:#*[^A-Za-z0-9_]*}:|words})
+      (( CURRENT > 3 )) && compadd -- --
+      _describe -t names 'secret' names ;;
+  esac
+}
+compdef _secret secret
