@@ -44,7 +44,20 @@ _secret() {
       return
     fi
   fi
-  local -a names=(${(f)"$(secret ls 2>/dev/null)"})
+  # `ls -l` prints "NAME  DESC"; names have no spaces, so split at the first.
+  # `run` skips names that aren't valid env vars or are already on the line.
+  setopt localoptions extendedglob
+  local line name desc
+  local -a names
+  for line in ${(f)"$(secret ls -l 2>/dev/null)"}; do
+    name=${line%% *}
+    if [[ $words[2] == run ]]; then
+      [[ $name == [A-Za-z_][A-Za-z0-9_]# ]] || continue
+      (( ${words[(Ie)$name]} )) && continue
+    fi
+    desc=${${line#$name}##[[:space:]]#}
+    names+=("$name${desc:+:$desc}")
+  done
   case $words[2] in
     get|has)
       (( CURRENT == 3 )) && _describe -t names 'secret' names ;;
@@ -56,8 +69,6 @@ _secret() {
         _describe -t names 'secret' names
       fi ;;
     run)
-      # Offer env-var-safe names not already listed, plus `--` after the first.
-      names=(${${names:#*[^A-Za-z0-9_]*}:|words})
       (( CURRENT > 3 )) && compadd -- --
       _describe -t names 'secret' names ;;
   esac

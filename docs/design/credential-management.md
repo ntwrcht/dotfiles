@@ -30,10 +30,11 @@ Keep every credential (API tokens, MongoDB URIs, SSH key passphrases) in the mac
 
 | Command | Result | Underlying call |
 |---|---|---|
-| `secret add NAME` | Prompts for the value twice with no echo (or reads one line from stdin when piped) and creates or updates the item | `add-generic-password … -U -w "VALUE"` sent to `security -i` on stdin, so the value never appears in argv or history. **Not** `security`'s own `-w` prompt: it silently truncates input to 128 characters, which cut a 192-character Atlassian token and broke Jira auth. `security -i` caps a line near 4 KB, so values over 3800 characters are refused |
+| `secret add NAME` | Prompts for the value twice with no echo (or reads one line from stdin when piped) and creates or updates the item | `add-generic-password … -U -w "VALUE"` sent to `security -i` on stdin, so the value never appears in argv or history. **Not** `security`'s own `-w` prompt: it silently truncates input to 128 characters, which cut a 192-character Atlassian token and broke Jira auth. `security -i` caps a line near 4 KB, so values over 3800 characters are refused. `-d DESC` sets the item's comment (one line, at most 200 characters); without `-d` the existing comment is kept |
 | `secret get NAME` | Prints the value to stdout. Exits 1 with a message on stderr if missing | `security find-generic-password -a $USER -s dotfiles/NAME -w` |
 | `secret has NAME` | Silent. Exits 0 if the item exists, 1 if not | same call without `-w` (security exits 44 when missing) |
 | `secret ls` | Prints names only, sorted, one per line. Never prints values | `security dump-keychain` → filter `"svce"<blob>="dotfiles/…"` |
+| `secret ls -l` | Prints each name with its description, aligned in two columns | same dump, pairing each item's `svce` with its `icmt` (comment); non-ASCII comments arrive as hex and are decoded with `xxd -r -p` |
 | `secret rm NAME` | Asks `Delete dotfiles/NAME? [y/N]`, then deletes. `-f` skips the question | `security delete-generic-password -a $USER -s dotfiles/NAME` |
 | `secret run NAME... -- CMD [ARGS]` | Runs `CMD` with each `NAME=<value>` in its environment only, and exits with `CMD`'s status. Fails before running `CMD` if any name is missing or not a valid env var name | `export NAME="$value"` inside the script, then `exec "$@"`, so values never reach argv |
 | `secret -h` | Prints usage | — |

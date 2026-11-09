@@ -202,9 +202,11 @@ Credentials live in the macOS login Keychain, never in a file, and are passed to
 |---|---|
 | `secret add NAME` | Prompt for the value (hidden) and create or update it |
 | `pbpaste \| secret add NAME` | Same, taking the value from the clipboard |
+| `secret add -d DESC NAME` | Same, and set an optional description (`-d ''` clears it; leaving out `-d` keeps the current one) |
 | `secret get NAME` | Print the value |
 | `secret has NAME` | Exit 0 if it exists, 1 if not |
 | `secret ls` | List names — never values |
+| `secret ls -l` | List names with their descriptions |
 | `secret rm [-f] NAME` | Delete, asking first unless `-f` |
 | `secret run NAME... -- CMD` | Run `CMD` with `NAME=value` in its environment only |
 
